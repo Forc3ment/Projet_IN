@@ -7,20 +7,44 @@
 
 using namespace std;
 
-vpImage<vpImage<int>*>* lbp(vpImage<int>& im)
+void afficheImage(vpImage<unsigned char> img, int posX, int posY, const char *title)
 {
-	vpImage<vpImage<int>*>* out = new vpImage<vpImage<int>*>(im.getHeight(), im.getWidth());
+    vpDisplayX d(img, posX, posY, title);
+    vpDisplay::display(img);
+    vpDisplay::flush(img);
+    vpDisplay::getClick(img);
+    vpDisplay::close(img);
+}
+
+void afficheImage(vpImage<double> & D, int posX, int posY, const char *title)
+{
+  vpImage<unsigned char> I; // Image to display
+  vpImageConvert::convert(D, I);
+  afficheImage(I, posX, posY, title);
+}
+
+void afficheImage(vpImage<int> & img, int posX, int posY, const char *title)
+{
+  vpImage<unsigned char> I(img.getHeight(), img.getWidth()); // Image to display
+  for (int i = 0; i < img.getHeight(); i++)
+		for (int j = 0; j < img.getWidth(); j++)
+			I[i][j] = img[i][j];
+  afficheImage(I, posX, posY, title);
+}
+
+void lbp(vpImage<unsigned char>& im, vpImage<int>& i1, vpImage<int>& i2, vpImage<int>& i3, vpImage<int>& i4, 
+	vpImage<int>& i5, vpImage<int>& i6, vpImage<int>& i7, vpImage<int>& i8)
+{
 	for (int i = 1; i < im.getHeight()-1; i++)
 		for (int j = 1; j < im.getWidth()-1; j++) {
-			out[i][j] = new vpImage<int>(3, 3);
-			out[i][j][0][0] = (im[i-1][j-1] < im[i][j]);
-			out[i][j][0][1] = (im[i-1][j] < im[i][j]);
-			out[i][j][0][2] = (im[i-1][j+1] < im[i][j]);
-			out[i][j][1][0] = (im[i][j-1] < im[i][j]);
-			out[i][j][1][2] = (im[i][j+1] < im[i][j]);
-			out[i][j][2][0] = (im[i+1][j-1] < im[i][j]);
-			out[i][j][0][1] = (im[i+1][j] < im[i][j]);
-			out[i][j][2][2] = (im[i+1][j+1] < im[i][j]);
+			i1[i][j] = (im[i-1][j-1] < im[i][j]);
+			i2[i][j] = (im[i-1][j] < im[i][j]);
+			i3[i][j] = (im[i-1][j+1] < im[i][j]);
+			i4[i][j] = (im[i][j-1] < im[i][j]);
+			i5[i][j] = (im[i][j+1] < im[i][j]);
+			i6[i][j] = (im[i+1][j-1] < im[i][j]);
+			i7[i][j] = (im[i+1][j] < im[i][j]);
+			i8[i][j] = (im[i+1][j+1] < im[i][j]);
 		}
 }
 
@@ -35,51 +59,14 @@ int main(int argc, char **argv)
 	unsigned int h, w;	
 	vpImage<unsigned char>  I1;
 	
-	im = "image.png";
+	im = "../image/baboon_grey.ppm";
 
 	vpImageIo::read(I1, im);	
 	h=I1.getHeight(); w=I1.getWidth();
+	vpImage<int> i1(h,w,0), i2(h,w,0), i3(h,w,0), i4(h,w,0), i5(h,w,0), i6(h,w,0), i7(h,w,0), i8(h,w,0);
+	lbp(I1, i1, i2, i3, i4, i5, i6, i7, i8);
 
-	
-	
-	cout << "Lecture " << sIm << " (" << h << ", " << w << ")" << endl;
-	
-	vpDisplayX d1(I1,100,100) ;
-	vpDisplay::setTitle(I1, "Image n.d.g.");
-	vpDisplay::display(I1);
-	vpDisplay::flush(I1) ;	
-	vpDisplay::getClick(I1);
-	
-	// lecture (interactive) d'une image couleur
-	vpImage<vpRGBa>  I2;
-	cout << "Nom de l'image (couleur) : ";
-	cin >> sIm; // Ex: ../images/lena.pgm	
-	vpImageIo::read(I2,sIm) ;
-	
-	h=I2.getHeight(); w=I2.getWidth();
-	
-	cout << "Lecture " << sIm << " (" << h << ", " << w << ")" << endl;
-	
-	vpDisplayX d2(I2,500,100) ;
-	vpDisplay::setTitle(I2, "Image couleur");
-	vpDisplay::display(I2);
-	vpDisplay::flush(I2) ;	
-	vpDisplay::getClick(I2);
-	
-	// modification et sauvegarde de l'image
-	for (int i=50; i<=150; i++) 
-		for (int j=50; j<=150; j++){
-			I2[i][j].R=0;
-			I2[i][j].G=0;
-			I2[i][j].B=0;
-		}
-
-	cout << "Sauvegarder l'image sous : ";
-	cin >> sIm; // Ex: ../tp0_results/lena_modif.pgm	
-	vpImageIo::write(I2,sIm) ;
-		
-	vpDisplay::close(I1) ;
-	vpDisplay::close(I2) ;
+	afficheImage(i1, 100, 100, "");
 	
 	cout << "Fin du programme " << endl ;
 	return(0);

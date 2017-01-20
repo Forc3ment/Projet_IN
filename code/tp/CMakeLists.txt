@@ -37,6 +37,7 @@
 # If you want to add/remove a source, modify here
 SET (SOURCE
   tp0-exemple.cpp
+  binary_desc.cpp
 )
 
 # rule for binary build
