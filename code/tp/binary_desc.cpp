@@ -40,7 +40,7 @@ int main(int argc, char **argv)
 	vpImageIo::read(I1, im);	
 	h=I1.getHeight(); w=I1.getWidth();
 
-
+	
 	
 	cout << "Lecture " << sIm << " (" << h << ", " << w << ")" << endl;
 	
