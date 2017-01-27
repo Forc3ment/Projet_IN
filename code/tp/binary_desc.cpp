@@ -1,36 +1,8 @@
 #include <visp/vpConfig.h>
 #include <visp/vpDebug.h>
-
-#include <visp/vpImage.h>
-#include <visp/vpImageIo.h>
-#include <visp/vpDisplayX.h>
+#include "affiche_image.cpp"
 
 using namespace std;
-
-void afficheImage(vpImage<unsigned char> img, int posX, int posY, const char *title)
-{
-    vpDisplayX d(img, posX, posY, title);
-    vpDisplay::display(img);
-    vpDisplay::flush(img);
-    vpDisplay::getClick(img);
-    vpDisplay::close(img);
-}
-
-void afficheImage(vpImage<double> & D, int posX, int posY, const char *title)
-{
-  vpImage<unsigned char> I; // Image to display
-  vpImageConvert::convert(D, I);
-  afficheImage(I, posX, posY, title);
-}
-
-void afficheImage(vpImage<int> & img, int posX, int posY, const char *title)
-{
-  vpImage<unsigned char> I(img.getHeight(), img.getWidth()); // Image to display
-  for (int i = 0; i < img.getHeight(); i++)
-		for (int j = 0; j < img.getWidth(); j++)
-			I[i][j] = img[i][j];
-  afficheImage(I, posX, posY, title);
-}
 
 void lbp(vpImage<unsigned char>& im, vpImage<int>& i1, vpImage<int>& i2, vpImage<int>& i3, vpImage<int>& i4, 
 	vpImage<int>& i5, vpImage<int>& i6, vpImage<int>& i7, vpImage<int>& i8)
