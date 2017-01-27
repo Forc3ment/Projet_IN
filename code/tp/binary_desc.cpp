@@ -45,13 +45,11 @@ int patch_errors(vpImage<unsigned char>& i1, vpImage<unsigned char>& i2)
 void process_graph(vpImage<unsigned char>& im, int hpatch, int wpatch, vpImage<unsigned char>& graph)
 {
 	int hpatch2 = hpatch/2, wpatch2 = wpatch/2;
-	cout << "aa" << endl;
 	// create & init central fixed patch
 	vpImage<unsigned char> fixed_patch(hpatch,wpatch,0);
 	for (int i = 0; i < hpatch; i++)
 		for (int j = 0; j < wpatch; j++)
 			fixed_patch[i][j] = im[(im.getHeight()-hpatch)/2 + i][(im.getWidth()-wpatch)/2 + j];
-	cout << "a" << endl;
 	// create moving patch
 	vpImage<unsigned char> moving_patch(hpatch,wpatch,0);
 	for (int i = hpatch2; i < im.getHeight()-hpatch2; i++)
@@ -59,10 +57,8 @@ void process_graph(vpImage<unsigned char>& im, int hpatch, int wpatch, vpImage<u
 			// fill moving patch
 			for (int ii = 0; ii < hpatch; ii++)
 				for (int jj = 0; jj < wpatch; jj++) {
-					//cout << "c" << i-hpatch2+ii << ' ' << ii << " " << jj << endl;
 					moving_patch[ii][jj] = im[i-hpatch2+ii][j-wpatch2+jj];
 				}
-			//cout << "b" << i << endl;
 			// fill graph
 			graph[i][j] = patch_errors(fixed_patch, moving_patch);
 		}
