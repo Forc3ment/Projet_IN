@@ -94,10 +94,10 @@ void process_graph(vpImage<unsigned char>& im, int hpatch, int wpatch, vpImage<d
 					p7[ii][jj] = i7[i-hpatch2+ii][j-wpatch2+jj];
 					p8[ii][jj] = i8[i-hpatch2+ii][j-wpatch2+jj];
 				}
+			}
 				// fill graph
 				graph[i][j] = patch_errors(fixed_p1,fixed_p2,fixed_p3,fixed_p4,fixed_p5,fixed_p6,fixed_p7,fixed_p8,
 										p1,p2,p3,p4,p5,p6,p7,p8);
-			}
 		}
 	}
 }
@@ -123,7 +123,7 @@ int main(int argc, char **argv)
 	h=I0.getHeight(); w=I0.getWidth();
 
 	
-	process_graph(I0, 30, 30, result);
+	process_graph(I0, 60, 60, result);
 
   	// vpPlot A(1, 700, 700, 100, 100, "");
   	// A.initGraph(0,1);
