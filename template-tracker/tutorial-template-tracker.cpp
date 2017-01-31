@@ -4,14 +4,15 @@
 #include <visp3/gui/vpDisplayOpenCV.h>
 #include <visp3/io/vpVideoReader.h>
 //! [Include]
-#include <visp3/tt/vpTemplateTrackerSSDInverseCompositional.h>
+#include <visp3/tt/vpTemplateTrackerSSDForwardAdditional.h>
+#include <visp3/tt/vpTemplateTrackerWarpAffine.h>
 #include <visp3/tt/vpTemplateTrackerWarpHomography.h>
 //! [Include]
 
 int main(int argc, char** argv)
 {
 #if defined(VISP_HAVE_OPENCV) && (VISP_HAVE_OPENCV_VERSION >= 0x020100) || defined(VISP_HAVE_FFMPEG)
-  std::string videoname = "bruegel.mpg";
+  std::string videoname = "myFace.mp4";
 
   for (int i=0; i<argc; i++) {
     if (std::string(argv[i]) == "--videoname")
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
 
   //! [Construction]
   vpTemplateTrackerWarpHomography warp;
-  vpTemplateTrackerSSDInverseCompositional tracker(&warp);
+  vpTemplateTrackerSSDForwardAdditional tracker(&warp);
   //! [Construction]
 
   tracker.setSampling(2, 2);
@@ -68,8 +69,8 @@ int main(int argc, char** argv)
 
     //! [Homography]
     vpColVector p = tracker.getp();
-    vpHomography H = warp.getHomography(p);
-    std::cout << "Homography: \n" << H << std::endl;
+    //vpHomography H = warp.getHomography(p);
+    //std::cout << "Homography: \n" << H << std::endl;
     //! [Homography]
 
     //! [Display]

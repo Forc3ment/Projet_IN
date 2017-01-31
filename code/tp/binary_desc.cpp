@@ -95,8 +95,9 @@ void process_graph(vpImage<unsigned char>& im, int hpatch, int wpatch, vpImage<d
 					p8[ii][jj] = i8[i-hpatch2+ii][j-wpatch2+jj];
 				}
 			}
-				// fill graph
-				graph[i][j] = patch_errors(fixed_p1,fixed_p2,fixed_p3,fixed_p4,fixed_p5,fixed_p6,fixed_p7,fixed_p8,
+			
+			// fill graph
+			graph[i][j] = patch_errors(fixed_p1,fixed_p2,fixed_p3,fixed_p4,fixed_p5,fixed_p6,fixed_p7,fixed_p8,
 										p1,p2,p3,p4,p5,p6,p7,p8);
 		}
 	}
