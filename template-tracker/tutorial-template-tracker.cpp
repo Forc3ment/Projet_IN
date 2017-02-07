@@ -4,6 +4,7 @@
 #include <visp3/gui/vpDisplayOpenCV.h>
 #include <visp3/io/vpVideoReader.h>
 //! [Include]
+#include "vpTemplateTrackerLBP.h"
 #include <visp3/tt/vpTemplateTrackerSSDForwardAdditional.h>
 #include <visp3/tt/vpTemplateTrackerWarpAffine.h>
 #include <visp3/tt/vpTemplateTrackerWarpHomography.h>
@@ -12,7 +13,7 @@
 int main(int argc, char** argv)
 {
 #if defined(VISP_HAVE_OPENCV) && (VISP_HAVE_OPENCV_VERSION >= 0x020100) || defined(VISP_HAVE_FFMPEG)
-  std::string videoname = "myFace.mp4";
+  std::string videoname = "../myFace.mp4";
 
   for (int i=0; i<argc; i++) {
     if (std::string(argv[i]) == "--videoname")
@@ -22,6 +23,7 @@ int main(int argc, char** argv)
       return 0;
     }
   }
+  
 
   std::cout << "Video name: " << videoname << std::endl;
 
@@ -47,7 +49,9 @@ int main(int argc, char** argv)
 
   //! [Construction]
   vpTemplateTrackerWarpHomography warp;
-  vpTemplateTrackerSSDForwardAdditional tracker(&warp);
+  //vpTemplateTrackerSSDForwardAdditional tracker(&warp);
+  vpTemplateTrackerLBP tracker(&warp);
+
   //! [Construction]
 
   tracker.setSampling(2, 2);

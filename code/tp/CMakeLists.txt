@@ -36,8 +36,8 @@
 #
 # If you want to add/remove a source, modify here
 SET (SOURCE
-  tp0-exemple.cpp
   binary_desc.cpp
+  tutorial-template-tracker.cpp
 )
 
 # rule for binary build
