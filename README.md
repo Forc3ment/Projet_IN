@@ -9,7 +9,7 @@ Create a folder build next to VISP folder.
 Go to this folder.
 Use ccmake ../visp
 Use make, wait a bit ...
-and then in the build directory use ./tutorial/tracking/template-tracker/tutorial-template-tracker and enjoy ;).
+and then in the build directory use ./tutorial/tracking/template-tracker/tutorial-template-tracker-test1tracker and enjoy ;).
 (you need to select a polygonial patch with left clicks, the last point of it needing a right click)
 
 ```
@@ -21,5 +21,5 @@ mdkir build
 cd build
 ccmake ../visp
 make
-./tutorial/tracking/template-tracker/tutorial-template-tracker
+./tutorial/tracking/template-tracker/tutorial-template-tracker-test1tracker
 ```
