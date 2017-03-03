@@ -1,5 +1,5 @@
 # Build repertory
-/build
+/visp_build
 
 # Compiled Object files
 *.slo
