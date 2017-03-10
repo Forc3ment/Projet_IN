@@ -7,6 +7,7 @@
 #include <visp3/tt/vpTemplateTrackerSSDInverseCompositional.h>
 #include <visp3/tt/vpTemplateTrackerWarpHomography.h>
 #include <visp3/tt/vpTemplateTrackerLBPForwardAdditional.h>
+#include <visp3/tt/vpTemplateTrackerSSDForwardAdditional.h>
 //! [Include]
 
 int main(int argc, char** argv)
