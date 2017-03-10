@@ -44,11 +44,11 @@
 #include <visp3/core/vpImageFilter.h>
 #include <visp3/core/vpException.h>
 
-#include <visp3/visual_features/vpFeatureLuminance.h>
+#include <visp3/visual_features/vpFeatureBitplane.h>
 
 
 /*!
-  \file vpFeatureLuminance.cpp
+  \file vpFeatureBitplane.cpp
   \brief Class that defines the image luminance visual feature
 
   For more details see \cite Collewet08c.
@@ -57,10 +57,10 @@
 
 
 /*!
-  Initialize the memory space requested for vpFeatureLuminance visual feature.
+  Initialize the memory space requested for vpFeatureBitplane visual feature.
 */
 void
-vpFeatureLuminance::init()
+vpFeatureBitplane::init()
 {
     if (flags == NULL)
       flags = new bool[nbParameters];
@@ -76,7 +76,7 @@ vpFeatureLuminance::init()
 
 
 void
-vpFeatureLuminance::init(unsigned int _nbr, unsigned int _nbc, double _Z)
+vpFeatureBitplane::init(unsigned int _nbr, unsigned int _nbc, double _Z)
 {
   init() ;
 
@@ -103,7 +103,7 @@ vpFeatureLuminance::init(unsigned int _nbr, unsigned int _nbc, double _Z)
 /*! 
   Default constructor that build a visual feature.
 */
-vpFeatureLuminance::vpFeatureLuminance()
+vpFeatureBitplane::vpFeatureBitplane()
   : Z(1), nbr(0), nbc(0), bord(10), pixInfo(NULL), firstTimeIn(0), cam()
 {
     nbParameters = 1;
@@ -116,7 +116,7 @@ vpFeatureLuminance::vpFeatureLuminance()
 /*!
  Copy constructor.
  */
-vpFeatureLuminance::vpFeatureLuminance(const vpFeatureLuminance& f)
+vpFeatureBitplane::vpFeatureBitplane(const vpFeatureBitplane& f)
   : vpBasicFeature(f), Z(1), nbr(0), nbc(0), bord(10), pixInfo(NULL), firstTimeIn(0), cam()
 {
   *this = f;
@@ -125,7 +125,7 @@ vpFeatureLuminance::vpFeatureLuminance(const vpFeatureLuminance& f)
 /*!
  Copy operator.
  */
-vpFeatureLuminance &vpFeatureLuminance::operator=(const vpFeatureLuminance& f)
+vpFeatureBitplane &vpFeatureBitplane::operator=(const vpFeatureBitplane& f)
 {
   Z = f.Z;
   nbr = f.nbr;
@@ -144,7 +144,7 @@ vpFeatureLuminance &vpFeatureLuminance::operator=(const vpFeatureLuminance& f)
 /*! 
   Destructor that free allocated memory.
 */
-vpFeatureLuminance::~vpFeatureLuminance() 
+vpFeatureBitplane::~vpFeatureBitplane() 
 {
   if (pixInfo != NULL) delete [] pixInfo ;
 }
@@ -155,7 +155,7 @@ vpFeatureLuminance::~vpFeatureLuminance()
   \param Z_ : \f$ Z \f$ value to set.
 */
 void
-vpFeatureLuminance::set_Z(const double Z_)
+vpFeatureBitplane::set_Z(const double Z_)
 {
     this->Z = Z_ ;
     flags[0] = true;
@@ -168,14 +168,14 @@ vpFeatureLuminance::set_Z(const double Z_)
   \return The value of \f$ Z \f$.
 */
 double
-vpFeatureLuminance::get_Z() const
+vpFeatureBitplane::get_Z() const
 {
     return Z ;
 }
 
 
 void
-vpFeatureLuminance::setCameraParameters(vpCameraParameters &_cam) 
+vpFeatureBitplane::setCameraParameters(vpCameraParameters &_cam) 
 {
   cam = _cam ;
 }
@@ -187,7 +187,7 @@ vpFeatureLuminance::setCameraParameters(vpCameraParameters &_cam)
 */
 
 void
-vpFeatureLuminance::buildFrom(vpImage<unsigned char> &I)
+vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 {
   unsigned int l = 0;
   double Ix,Iy ;
@@ -251,7 +251,7 @@ vpFeatureLuminance::buildFrom(vpImage<unsigned char> &I)
   thanks to the values of the luminance features \f$ I \f$
 */
 void
-vpFeatureLuminance::interaction(vpMatrix &L)
+vpFeatureBitplane::interaction(vpMatrix &L)
 {  
   L.resize(dim_s,6) ;
 
@@ -279,7 +279,7 @@ vpFeatureLuminance::interaction(vpMatrix &L)
   Compute and return the interaction matrix \f$ L_I \f$. The computation is made
   thanks to the values of the luminance features \f$ I \f$
 */
-vpMatrix  vpFeatureLuminance::interaction(const unsigned int /* select */)
+vpMatrix  vpFeatureBitplane::interaction(const unsigned int /* select */)
 {
   /* static */ vpMatrix L  ; // warning C4640: 'L' : construction of local static object is not thread-safe
   interaction(L) ;
@@ -295,15 +295,12 @@ vpMatrix  vpFeatureLuminance::interaction(const unsigned int /* select */)
 
 */
 void
-vpFeatureLuminance::error(const vpBasicFeature &s_star,
+vpFeatureBitplane::error(const vpBasicFeature &s_star,
 			  vpColVector &e)
 {
   e.resize(dim_s) ;
 
-  for (unsigned int i =0 ; i < dim_s ; i++)
-    {
-      e[i] = s[i] - s_star[i] ;
-    }
+  lbp(s_star, s, e);
 }
 
 
@@ -316,7 +313,7 @@ vpFeatureLuminance::error(const vpBasicFeature &s_star,
 
 */
 vpColVector
-vpFeatureLuminance::error(const vpBasicFeature &s_star,
+vpFeatureBitplane::error(const vpBasicFeature &s_star,
 			  const unsigned int /* select */)
 {
   /* static */ vpColVector e ; // warning C4640: 'e' : construction of local static object is not thread-safe
@@ -328,6 +325,27 @@ vpFeatureLuminance::error(const vpBasicFeature &s_star,
 }
 
 
+void vpTemplateTrackerLBP::lbp(const vpBasicFeature &im, const vpBasicFeature &im2, vpColVector &erreur)
+{
+  int w = im.getWidth(), h = im.getHeight();
+  for (int i = 1; i < h-1; i++)
+    for (int j = 1; j < w-1; j++) {
+      int v = im[i + j*w];
+      int v2 = im2[i + j*w];
+      int e = 0;
+      e  = (im[i-1 + (j-1)*w] < v)  ^ (im2[i-1 + (j-1)*w] < v2);
+      e += (im[i-1 + j*w] < v)      ^ (im2[i-1 + j*w] < v2);
+      e += (im[i-1 + (j+1)*w] < v)  ^ (im2[i-1 + (j+1)*w] < v2);
+      e += (im[i + (j-1)*w] < v)    ^ (im2[i + (j-1)*w] < v2);
+      e += (im[i + (j+1)*w] < v)    ^ (im2[i + (j+1)*w] < v2);
+      e += (im[i+1 + (j-1)*w] < v)  ^ (im2[i+1 + (j-1)*w] < v2);
+      e += (im[i+1 + (j)*w] < v)    ^ (im2[i+1 + (j)*w] < v2);
+      e += (im[i+1 + (j+1)*w] < v)  ^ (im2[i+1 + (j+1)*w] < v2);
+      erreur[i + j*w] = e;
+    }
+}
+
+
 
 
 /*!
@@ -336,7 +354,7 @@ vpFeatureLuminance::error(const vpBasicFeature &s_star,
 
  */
 void
-vpFeatureLuminance::print(const unsigned int /* select */) const
+vpFeatureBitplane::print(const unsigned int /* select */) const
 {
   static int firsttime =0 ;
 
@@ -357,7 +375,7 @@ vpFeatureLuminance::print(const unsigned int /* select */) const
 
  */
 void
-vpFeatureLuminance::display(const vpCameraParameters & /* cam */,
+vpFeatureBitplane::display(const vpCameraParameters & /* cam */,
                             const vpImage<unsigned char> & /* I */,
                             const vpColor &/* color */,
                             unsigned int /* thickness */) const
@@ -379,7 +397,7 @@ vpFeatureLuminance::display(const vpCameraParameters & /* cam */,
 
  */
 void
-vpFeatureLuminance::display(const vpCameraParameters & /* cam */,
+vpFeatureBitplane::display(const vpCameraParameters & /* cam */,
                             const vpImage<vpRGBa> & /* I */,
                             const vpColor &/* color */,
                             unsigned int /* thickness */) const
@@ -401,14 +419,14 @@ vpFeatureLuminance::display(const vpCameraParameters & /* cam */,
 
   \code
   vpBasicFeature *s_star;
-  vpFeatureLuminance s;
-  s_star = s.duplicate(); // s_star is now a vpFeatureLuminance
+  vpFeatureBitplane s;
+  s_star = s.duplicate(); // s_star is now a vpFeatureBitplane
   \endcode
 
 */
-vpFeatureLuminance *vpFeatureLuminance::duplicate() const
+vpFeatureBitplane *vpFeatureBitplane::duplicate() const
 {
-  vpFeatureLuminance *feature = new vpFeatureLuminance ;
+  vpFeatureBitplane *feature = new vpFeatureBitplane ;
   return feature ;
 }
 

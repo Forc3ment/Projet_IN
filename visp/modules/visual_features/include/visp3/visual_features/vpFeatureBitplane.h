@@ -35,8 +35,8 @@
  *
  *****************************************************************************/
 
-#ifndef vpFeatureLuminance_h
-#define vpFeatureLuminance_h
+#ifndef vpFeatureBitplane_h
+#define vpFeatureBitplane_h
 
 #include <visp3/core/vpMatrix.h>
 #include <visp3/visual_features/vpBasicFeature.h>
@@ -44,7 +44,7 @@
 
 
 /*!
-  \file vpFeatureLuminance.h
+  \file vpFeatureBitplane.h
   \brief Class that defines the image luminance visual feature
 
   For more details see \cite Collewet08c.
@@ -55,7 +55,7 @@
   \class vpLuminance
   \brief Class that defines the luminance and gradient of a point
 
-  \sa vpFeatureLuminance
+  \sa vpFeatureBitplane
 */
 
 
@@ -71,14 +71,14 @@ class VISP_EXPORT vpLuminance
 
 
 /*!
-  \class vpFeatureLuminance
+  \class vpFeatureBitplane
   \ingroup group_visual_features
   \brief Class that defines the image luminance visual feature
 
   For more details see \cite Collewet08c.
 */
 
-class VISP_EXPORT vpFeatureLuminance : public vpBasicFeature
+class VISP_EXPORT vpFeatureBitplane : public vpBasicFeature
 {
  protected:
   //! FeaturePoint depth (required to compute the interaction matrix)
@@ -104,12 +104,12 @@ public:
   void init() ;
   void init(unsigned int _nbr, unsigned int _nbc, double _Z) ;
 
-  vpFeatureLuminance() ;
-  vpFeatureLuminance(const vpFeatureLuminance& f) ;
-  vpFeatureLuminance &operator=(const vpFeatureLuminance& f) ;
+  vpFeatureBitplane() ;
+  vpFeatureBitplane(const vpFeatureBitplane& f) ;
+  vpFeatureBitplane &operator=(const vpFeatureBitplane& f) ;
 
   //! Destructor.
-  virtual ~vpFeatureLuminance()  ;
+  virtual ~vpFeatureBitplane()  ;
 
  public:
   vpCameraParameters cam ;
@@ -138,7 +138,7 @@ public:
 
   void print(const unsigned int select = FEATURE_ALL ) const ;
 
-  vpFeatureLuminance *duplicate() const ;
+  vpFeatureBitplane *duplicate() const ;
 
 
   void display(const vpCameraParameters &cam,
