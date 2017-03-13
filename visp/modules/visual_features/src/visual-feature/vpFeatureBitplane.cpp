@@ -95,7 +95,7 @@ vpFeatureBitplane::init(unsigned int _nbr, unsigned int _nbc, double _Z)
   if (pixInfo != NULL)
     delete [] pixInfo;
 
-  pixInfo = new vpLuminance[dim_s] ;
+  pixInfo = new vpBitplane[dim_s] ;
   
   Z = _Z ;
 }
@@ -135,7 +135,7 @@ vpFeatureBitplane &vpFeatureBitplane::operator=(const vpFeatureBitplane& f)
   cam = f.cam;
   if (pixInfo)
     delete [] pixInfo;
-  pixInfo = new vpLuminance[dim_s] ;
+  pixInfo = new vpBitplane[dim_s] ;
   for(unsigned int i=0; i< dim_s; i++)
     pixInfo[i] = f.pixInfo[i];
   return (*this);
@@ -221,24 +221,24 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 
   l= 0 ;
   for (unsigned int i=bord; i < nbr-bord ; i++)
-    {
-      //   cout << i << endl ;
-      for (unsigned int j = bord ; j < nbc-bord; j++)
-	{
-	  // cout << dim_s <<" " <<l <<"  " <<i << "  " << j <<endl ;
-          Ix =  px * vpImageFilter::derivativeFilterX(I,i,j) ;
-	  Iy =  py * vpImageFilter::derivativeFilterY(I,i,j) ;
-	  
-	  // Calcul de Z
-	  
-	  pixInfo[l].I  =  I[i][j] ;
-	  s[l]  =  I[i][j] ;
-	  pixInfo[l].Ix  = Ix;
-	  pixInfo[l].Iy  = Iy;
-	  
-	  l++;
-	}
-    }
+  {
+    //   cout << i << endl ;
+    for (unsigned int j = bord ; j < nbc-bord; j++)
+  	{
+  	  // cout << dim_s <<" " <<l <<"  " <<i << "  " << j <<endl ;
+      Ix =  px * vpImageFilter::derivativeFilterX(I,i,j) ;
+  	  Iy =  py * vpImageFilter::derivativeFilterY(I,i,j) ;
+  	  
+  	  // Calcul de Z
+  	  
+  	  pixInfo[l].I  =  I[i][j] ;
+  	  s[l]  =  I[i][j] ;
+  	  pixInfo[l].Ix  = Ix;
+  	  pixInfo[l].Iy  = Iy;
+  	  
+  	  l++;
+  	}
+  }
 
 }
 

@@ -52,14 +52,14 @@
 
 
 /*!
-  \class vpLuminance
+  \class vpBitplane
   \brief Class that defines the luminance and gradient of a point
 
   \sa vpFeatureBitplane
 */
 
 
-class VISP_EXPORT vpLuminance
+class VISP_EXPORT vpBitplane
 {
  public:
   double x, y;   // point coordinates (in meter)
@@ -93,7 +93,7 @@ class VISP_EXPORT vpFeatureBitplane : public vpBasicFeature
   unsigned int bord ;
   
   //! Store the image (as a vector with intensity and gradient I, Ix, Iy) 
-  vpLuminance *pixInfo ;
+  vpBitplane *pixInfo ;
   int  firstTimeIn  ;
 
  public:
