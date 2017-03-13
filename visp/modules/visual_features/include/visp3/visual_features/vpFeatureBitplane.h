@@ -149,7 +149,9 @@ public:
                const vpColor &color=vpColor::green, unsigned int thickness=1) const ;
 
   //! Compute the error between a visual features and zero
-  vpColVector error(const unsigned int select = FEATURE_ALL)  ;
+  vpColVector error(const unsigned int select = FEATURE_ALL);
+
+  void lbp(const vpBasicFeature &im, const vpBasicFeature &im2, vpColVector &erreur);
 } ;
 
 
