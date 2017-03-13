@@ -195,8 +195,8 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   double px = cam.get_px() ;
   double py = cam.get_py() ;
 
-  this.w = I.getWidth();
-  this.h = I.getHeight();
+  this->w = I.getWidth();
+  this->h = I.getHeight();
 
 
   if (firstTimeIn==0)
@@ -328,9 +328,9 @@ vpFeatureBitplane::error(const vpBasicFeature &s_star,
 }
 
 
-void vpTemplateTrackerLBP::lbp(const vpBasicFeature &im, const vpBasicFeature &im2, vpColVector &erreur)
+void vpFeatureBitplane::lbp(const vpBasicFeature &im, const vpColVector &im2, vpColVector &erreur)
 {
-  int w = this.w, h = this.h;
+  int w = this->w, h = this->h;
   for (int i = 1; i < h-1; i++)
     for (int j = 1; j < w-1; j++) {
       int v = im[i + j*w];

@@ -153,7 +153,7 @@ public:
   //! Compute the error between a visual features and zero
   vpColVector error(const unsigned int select = FEATURE_ALL);
 
-  void lbp(const vpBasicFeature &im, const vpBasicFeature &im2, vpColVector &erreur);
+  void lbp(const vpBasicFeature &im, const vpColVector &im2, vpColVector &erreur);
 } ;
 
 
