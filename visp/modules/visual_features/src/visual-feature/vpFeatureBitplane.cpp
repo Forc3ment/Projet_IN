@@ -195,18 +195,18 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   double px = cam.get_px() ;
   double py = cam.get_py() ;
 
-  this->w = I.getWidth();
-  this->h = I.getHeight();
+  /*this->w = I.getWidth();
+  this->h = I.getHeight();*/
 
 
   if (firstTimeIn==0)
     { 
       firstTimeIn=1 ;
       l =0 ;
-      for (unsigned int i=bord; i < nbr-bord ; i++)
+      for (unsigned int i=bord; i < nbr - bord ; i++)
 	{
 	  //   cout << i << endl ;
-	  for (unsigned int j = bord ; j < nbc-bord; j++)
+	  for (unsigned int j = bord ; j < nbc - bord; j++)
 	    {	double x=0,y=0;
 	      vpPixelMeterConversion::convertPoint(cam,
 						   j,i,
@@ -222,11 +222,11 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 	}
     }
 
-  l= 0 ;
-  for (unsigned int i=bord; i < nbr-bord ; i++)
+  l = 0 ;
+  for (unsigned int i=bord; i < nbr - bord ; i++)
   {
     //   cout << i << endl ;
-    for (unsigned int j = bord ; j < nbc-bord; j++)
+    for (unsigned int j = bord ; j < nbc - bord; j++)
   	{
   	  // cout << dim_s <<" " <<l <<"  " <<i << "  " << j <<endl ;
       Ix =  px * vpImageFilter::derivativeFilterX(I,i,j) ;
@@ -330,9 +330,14 @@ vpFeatureBitplane::error(const vpBasicFeature &s_star,
 
 void vpFeatureBitplane::lbp(const vpBasicFeature &im, const vpColVector &im2, vpColVector &erreur)
 {
-  int w = this->w, h = this->h;
-  for (int i = 1; i < h-1; i++)
-    for (int j = 1; j < w-1; j++) {
+  int w = this->nbc - 2*bord, h = this->nbr - 2*bord;
+  /*std::cout << im.getDimension() << "" << std::endl;
+  std::cout << im2.size() << "" << std::endl;
+  std::cout << erreur.size() << "" << std::endl;
+  std::cout << w << std::endl;
+  std::cout << h << std::endl;*/
+  for (int i = 1; i < w-1; i++)
+    for (int j = 1; j < h-1; j++) {
       int v = im[i + j*w];
       int v2 = im2[i + j*w];
       int e = 0;
