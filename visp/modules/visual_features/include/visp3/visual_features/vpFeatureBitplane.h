@@ -96,6 +96,8 @@ class VISP_EXPORT vpFeatureBitplane : public vpBasicFeature
   vpBitplane *pixInfo ;
   int  firstTimeIn  ;
 
+  int w, h; // save the w and h of the original image
+
  public:
   void buildFrom(vpImage<unsigned char> &I) ;
 
