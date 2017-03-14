@@ -96,6 +96,7 @@ vpFeatureBitplane::init(unsigned int _nbr, unsigned int _nbc, double _Z)
     delete [] pixInfo;
 
   pixInfo = new vpBitplane[dim_s] ;
+  pixInfo.lbp = new bool[8];
   
   Z = _Z ;
 }
