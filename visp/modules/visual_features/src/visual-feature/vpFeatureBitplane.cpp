@@ -96,7 +96,16 @@ vpFeatureBitplane::init(unsigned int _nbr, unsigned int _nbc, double _Z)
     delete [] pixInfo;
 
   pixInfo = new vpBitplane[dim_s] ;
-  pixInfo.lbp = new bool[8];
+
+  for(unsigned int i = 0; i<dim_s; i++) 
+  {
+    pixInfo[i].lbp = new bool[8];
+    pixInfo[i].Ix = new double[8];
+    pixInfo[i].Iy = new double[8];
+
+  }
+      
+
   
   Z = _Z ;
 }
@@ -147,7 +156,20 @@ vpFeatureBitplane &vpFeatureBitplane::operator=(const vpFeatureBitplane& f)
 */
 vpFeatureBitplane::~vpFeatureBitplane() 
 {
-  if (pixInfo != NULL) delete [] pixInfo ;
+  if (pixInfo != NULL)
+  {
+    for(unsigned int i = 0; i<dim_s; i++) 
+    {
+      if (pixInfo[i].lbp != NULL)
+        delete [] pixInfo[i].lbp;
+      if (pixInfo[i].Ix != NULL)
+        delete [] pixInfo[i].Ix;
+      if (pixInfo[i].Iy != NULL)
+        delete [] pixInfo[i].Iy;
+    }
+      
+    delete [] pixInfo ;
+  } 
 }
 
 /*!
@@ -201,30 +223,28 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 
 
   if (firstTimeIn==0)
-    { 
-      firstTimeIn=1 ;
-      l =0 ;
-      for (unsigned int i=bord; i < nbr - bord ; i++)
-	{
-	  //   cout << i << endl ;
-	  for (unsigned int j = bord ; j < nbc - bord; j++)
-	    {	double x=0,y=0;
-	      vpPixelMeterConversion::convertPoint(cam,
-						   j,i,
-						   x,y)  ;
-	    
-	      pixInfo[l].x = x;
-	      pixInfo[l].y = y;
+  { 
+    firstTimeIn=1 ;
+    l =0 ;
+    for (unsigned int i=bord; i < nbr - bord ; i++)
+    {
+  	  //   cout << i << endl ;
+  	  for (unsigned int j = bord ; j < nbc - bord; j++)
+ 	    {	
+        double x=0,y=0;
+    	  vpPixelMeterConversion::convertPoint(cam,
+    		   j,i,
+    		   x,y)  ;
+    	   
+    	  pixInfo[l].x = x;
+    	  pixInfo[l].y = y;
 
-	      pixInfo[l].Z   = Z ;
+    	  pixInfo[l].Z   = Z ;
 
-	      l++;
-	    }
-	   }
-    }
-
-
-  lbp(s_star, s, e);
+    	  l++;
+      }
+	  }
+  }
 
   l = 0 ;
   for (unsigned int i=bord; i < nbr - bord ; i++)
@@ -233,15 +253,21 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
     for (unsigned int j = bord ; j < nbc - bord; j++)
   	{
   	  // cout << dim_s <<" " <<l <<"  " <<i << "  " << j <<endl ;
-      Ix =  px * vpImageFilter::derivativeFilterX(I,i,j) ; // px -> pixel to m
-  	  Iy =  py * vpImageFilter::derivativeFilterY(I,i,j) ;
+     //  Ix =  px * vpImageFilter::derivativeFilterX(I,i,j) ; // px -> pixel to m
+  	  // Iy =  py * vpImageFilter::derivativeFilterY(I,i,j) ;
+
+        pixInfo[l].lbp[0] = I[i-1][j-1]   <   I[i][j];
+        pixInfo[l].lbp[1] = I[i-1][j]     <   I[i][j];
+        pixInfo[l].lbp[2] = I[i-1][j+1]   <   I[i][j];
+        pixInfo[l].lbp[3] = I[i][j-1]     <   I[i][j];
+        pixInfo[l].lbp[4] = I[i][j+1]     <   I[i][j];
+        pixInfo[l].lbp[5] = I[i+1][j-1]   <   I[i][j];
+        pixInfo[l].lbp[6] = I[i+1][j]     <   I[i][j];
+        pixInfo[l].lbp[7] = I[i+1][j+1]   <   I[i][j];
   	  
-  	  // Calcul de Z
-  	  
-  	  pixInfo[l].I  =  I[i][j] ;
-  	  s[l]  =  I[i][j] ;
-  	  pixInfo[l].Ix  = Ix;
-  	  pixInfo[l].Iy  = Iy;
+  	  // s[l]  =  I[i][j] ;
+  	  // pixInfo[l].Ix  = Ix;
+  	  // pixInfo[l].Iy  = Iy;
   	  
   	  l++;
   	}
@@ -264,8 +290,8 @@ vpFeatureBitplane::interaction(vpMatrix &L)
 
   for(unsigned int m = 0; m< L.getRows(); m++)
   {
-    double Ix = pixInfo[m].Ix;
-    double Iy = pixInfo[m].Iy;
+    double* Ix = pixInfo[m].Ix;
+    double* Iy = pixInfo[m].Iy;
 
     double x = pixInfo[m].x ;
     double y = pixInfo[m].y ;
@@ -309,7 +335,6 @@ vpFeatureBitplane::error(const vpBasicFeature &s_star,
 }
 
 
-
 /*!
   Compute the error \f$ (I-I^*)\f$ between the current and the desired
  
@@ -328,47 +353,6 @@ vpFeatureBitplane::error(const vpBasicFeature &s_star,
   return e ;
 
 }
-
-
-
-void vpTemplateTrackerLBP::lbp(const vpImage<unsigned char> &im, vpImage<bool>& i1, vpImage<bool>& i2, vpImage<bool>& i3, vpImage<bool>& i4, 
-  vpImage<bool>& i5, vpImage<bool>& i6, vpImage<bool>& i7, vpImage<bool>& i8)
-{
-  for (int i = 1; i < im.getHeight()-1; i++)
-    for (int j = 1; j < im.getWidth()-1; j++) {
-      i1[i][j] = im[i-1][j-1] < im[i][j];
-      i2[i][j] = im[i-1][j] < im[i][j];
-      i3[i][j] = im[i-1][j+1] < im[i][j];
-      i4[i][j] = im[i][j-1] < im[i][j];
-      i5[i][j] = im[i][j+1] < im[i][j];
-      i6[i][j] = im[i+1][j-1] < im[i][j];
-      i7[i][j] = im[i+1][j] < im[i][j];
-      i8[i][j] = im[i+1][j+1] < im[i][j];
-    }
-}
-
-
-// void vpFeatureBitplane::lbp(const vpBasicFeature &im, const vpColVector &im2, vpColVector &erreur)
-// {
-//   int w = this->nbc - 2*bord, h = this->nbr - 2*bord;
-//   for (int i = 1; i < w-1; i++)
-//     for (int j = 1; j < h-1; j++) {
-
-//       int v = im[i + j*w];
-//       int v2 = im2[i + j*w];
-      
-//       int e = 0;
-//       e  = (im[i-1 + (j-1)*w] < v)  ^ (im2[i-1 + (j-1)*w] < v2);
-//       e += (im[i-1 + j*w] < v)      ^ (im2[i-1 + j*w] < v2);
-//       e += (im[i-1 + (j+1)*w] < v)  ^ (im2[i-1 + (j+1)*w] < v2);
-//       e += (im[i + (j-1)*w] < v)    ^ (im2[i + (j-1)*w] < v2);
-//       e += (im[i + (j+1)*w] < v)    ^ (im2[i + (j+1)*w] < v2);
-//       e += (im[i+1 + (j-1)*w] < v)  ^ (im2[i+1 + (j-1)*w] < v2);
-//       e += (im[i+1 + (j)*w] < v)    ^ (im2[i+1 + (j)*w] < v2);
-//       e += (im[i+1 + (j+1)*w] < v)  ^ (im2[i+1 + (j+1)*w] < v2);
-//       erreur[i + j*w] = e;
-//     }
-// }
 
 
 

@@ -63,8 +63,8 @@ class VISP_EXPORT vpBitplane
 {
  public:
   double x, y;   // point coordinates (in meter)
-  bool *lbp ; // pixel sum of bitplanes
-  double Ix,Iy ; // pixel gradient
+  bool* lbp ; // pixel sum of bitplanes
+  double *Ix, *Iy ; // pixel gradient
   double Z; // pixel depth
 
 };
@@ -153,7 +153,6 @@ public:
   //! Compute the error between a visual features and zero
   vpColVector error(const unsigned int select = FEATURE_ALL);
 
-  void lbp(const vpBasicFeature &im, const vpColVector &im2, vpColVector &erreur);
 } ;
 
 
