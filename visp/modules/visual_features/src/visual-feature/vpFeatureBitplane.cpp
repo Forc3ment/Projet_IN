@@ -326,8 +326,8 @@ vpFeatureBitplane::interaction(vpMatrix &L)
     for (int i = 0; i < 8; ++i)
     {
       int j = m*8 + i;
-      L[j][0] =     Ix[i] * Zinv;
-      L[j][1] =     Iy[i] * Zinv;
+      L[j][0] = Ix[i] * Zinv;
+      L[j][1] = Iy[i] * Zinv;
       L[j][2] = -(x*Ix[i] + y*Iy[i]) * Zinv;
       L[j][3] = -Ix[i]*x*y - (1+y*y)*Iy[i];
       L[j][4] = (1+x*x)*Ix[i] + Iy[i]*x*y;
