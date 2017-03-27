@@ -222,14 +222,14 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   this->h = I.getHeight();*/
 
 
-  if (firstTimeIn==0)
+  if (firstTimeIn == 0)
   { 
-    firstTimeIn=1 ;
-    l =0 ;
-    for (unsigned int i=bord; i < nbr - bord ; i++)
+    firstTimeIn = 1 ;
+    l = 0;
+    for (unsigned int i=bord; i < nbr - bord; i++)
     {
   	  //   cout << i << endl ;
-  	  for (unsigned int j = bord ; j < nbc - bord; j++)
+  	  for (unsigned int j = bord; j < nbc - bord; j++)
  	    {	
         double x=0,y=0;
     	  vpPixelMeterConversion::convertPoint(cam,
