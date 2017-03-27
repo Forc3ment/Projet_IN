@@ -379,7 +379,7 @@ vpFeatureBitplane::error(const vpBasicFeature &s_star,
         e[l+6] = pixInfo[pix].lbp[6] ^ s_star_lbp.pixInfo[pix].lbp[6];
         e[l+7] = pixInfo[pix].lbp[7] ^ s_star_lbp.pixInfo[pix].lbp[7];
 
-        l+=8;
+        l += 8;
         pix++;
       }
     }
