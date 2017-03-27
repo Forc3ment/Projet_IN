@@ -293,9 +293,9 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 void
 vpFeatureBitplane::interaction(vpMatrix &L)
 {  
-  L.resize(dim_s,6) ;
+  L.resize(dim_s*8,6) ;
 
-  for(unsigned int m = 0; m< L.getRows(); m++)
+  for(unsigned int m = 0; m < dim_s; m++)
   {
     double* Ix = pixInfo[m].Ix;
     double* Iy = pixInfo[m].Iy;
@@ -306,20 +306,14 @@ vpFeatureBitplane::interaction(vpMatrix &L)
 
     for (int i = 0; i < 8; ++i)
     {
-      L[m][0] +=     Ix[i] * Zinv;
-      L[m][1] +=     Iy[i] * Zinv;
-      L[m][2] += -(x*Ix[i] + y*Iy[i]) * Zinv;
-      L[m][3] += -Ix[i]*x*y - (1+y*y)*Iy[i];
-      L[m][4] += (1+x*x)*Ix[i] + Iy[i]*x*y;
-      L[m][5] += Iy[i]*x - Ix[i]*y;
+      int j = m*8 + i;
+      L[j][0] =     Ix[i] * Zinv;
+      L[j][1] =     Iy[i] * Zinv;
+      L[j][2] = -(x*Ix[i] + y*Iy[i]) * Zinv;
+      L[j][3] = -Ix[i]*x*y - (1+y*y)*Iy[i];
+      L[j][4] = (1+x*x)*Ix[i] + Iy[i]*x*y;
+      L[j][5] = Iy[i]*x - Ix[i]*y;
     }
-
-    L[m][0] /= 8;
-    L[m][1] /= 8;
-    L[m][2] /= 8;
-    L[m][3] /= 8;
-    L[m][4] /= 8;
-    L[m][5] /= 8;
   }
 }
 
@@ -346,27 +340,29 @@ void
 vpFeatureBitplane::error(const vpBasicFeature &s_star,
 			  vpColVector &e)
 {
-  e.resize(dim_s);
-  vpFeatureBitplane *s_star_lbp = dynamic_cast<vpFeatureBitplane>(&s_star)
-  if (s_star_lbp!=NULL) 
+  e.resize(dim_s*8);
+
+  vpFeatureBitplane & s_star_lbp = (vpFeatureBitplane &)s_star;
+  if (&s_star_lbp!=NULL) 
   {
     int l=0;
+    int pix=0;
     for (unsigned int i=bord; i < nbr - bord ; i++)
     {
       for (unsigned int j = bord ; j < nbc - bord; j++)
       { 
-        e[l] =  pixInfo[l].lbp[0] ^ s_star.pixInfo[l].lbp[0];
-        e[l] += pixInfo[l].lbp[1] ^ s_star.pixInfo[l].lbp[1];
-        e[l] += pixInfo[l].lbp[2] ^ s_star.pixInfo[l].lbp[2];
-        e[l] += pixInfo[l].lbp[3] ^ s_star.pixInfo[l].lbp[3];
-        e[l] += pixInfo[l].lbp[4] ^ s_star.pixInfo[l].lbp[4];
-        e[l] += pixInfo[l].lbp[5] ^ s_star.pixInfo[l].lbp[5];
-        e[l] += pixInfo[l].lbp[6] ^ s_star.pixInfo[l].lbp[6];
-        e[l] += pixInfo[l].lbp[7] ^ s_star.pixInfo[l].lbp[7];
+        e[l]   = pixInfo[pix].lbp[0] ^ s_star_lbp.pixInfo[pix].lbp[0];
+        e[l+1] = pixInfo[pix].lbp[1] ^ s_star_lbp.pixInfo[pix].lbp[1];
+        e[l+2] = pixInfo[pix].lbp[2] ^ s_star_lbp.pixInfo[pix].lbp[2];
+        e[l+3] = pixInfo[pix].lbp[3] ^ s_star_lbp.pixInfo[pix].lbp[3];
+        e[l+4] = pixInfo[pix].lbp[4] ^ s_star_lbp.pixInfo[pix].lbp[4];
+        e[l+5] = pixInfo[pix].lbp[5] ^ s_star_lbp.pixInfo[pix].lbp[5];
+        e[l+6] = pixInfo[pix].lbp[6] ^ s_star_lbp.pixInfo[pix].lbp[6];
+        e[l+7] = pixInfo[pix].lbp[7] ^ s_star_lbp.pixInfo[pix].lbp[7];
 
-        l++;
+        l+=8;
+        pix++;
       }
-      e[l] /= 8;
     }
   }
   else std::cout << "ERROR !!";
