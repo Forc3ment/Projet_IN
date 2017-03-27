@@ -239,7 +239,7 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
     	  pixInfo[l].x = x;
     	  pixInfo[l].y = y;
 
-    	  pixInfo[l].Z   = Z ;
+    	  pixInfo[l].Z = Z ;
 
     	  l++;
       }
@@ -340,7 +340,7 @@ vpFeatureBitplane::interaction(vpMatrix &L)
   Compute and return the interaction matrix \f$ L_I \f$. The computation is made
   thanks to the values of the luminance features \f$ I \f$
 */
-vpMatrix  vpFeatureBitplane::interaction(const unsigned int /* select */)
+vpMatrix vpFeatureBitplane::interaction(const unsigned int /* select */)
 {
   /* static */ vpMatrix L  ; // warning C4640: 'L' : construction of local static object is not thread-safe
   interaction(L) ;
