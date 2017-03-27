@@ -247,7 +247,7 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   }
 
   l = 0 ;
-  for (unsigned int i=bord; i < nbr - bord ; i++)
+  for (unsigned int i = bord; i < nbr - bord ; i++)
   {
     for (unsigned int j = bord ; j < nbc - bord; j++)
   	{
