@@ -254,29 +254,40 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
         pixInfo[l].lbp[0] = I[i-1][j-1]   <   I[i][j];
         pixInfo[l].lbp[1] = I[i-1][j]     <   I[i][j];
         pixInfo[l].lbp[2] = I[i-1][j+1]   <   I[i][j];
-        pixInfo[l].lbp[3] = I[i][j-1]     <   I[i][j];
-        pixInfo[l].lbp[4] = I[i][j+1]     <   I[i][j];
-        pixInfo[l].lbp[5] = I[i+1][j-1]   <   I[i][j];
-        pixInfo[l].lbp[6] = I[i+1][j]     <   I[i][j];
-        pixInfo[l].lbp[7] = I[i+1][j+1]   <   I[i][j];
-  	  
-        pixInfo[l].Ix[0] = px * ((I[i][j-1]    <   I[i+1][j]) - (I[i-2][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Ix[1] = px * ((I[i][j-1]    <   I[i+1][j]) - (I[i-2][j]     <   I[i-1][j])) ;
-        pixInfo[l].Ix[2] = px * ((I[i][j-1]    <   I[i+1][j]) - (I[i-2][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Ix[3] = px * ((I[i+1][j-1]  <   I[i+1][j]) - (I[i-1][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Ix[4] = px * ((I[i+1][j-1]  <   I[i+1][j]) - (I[i-1][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Ix[5] = px * ((I[i+2][j-1]  <   I[i+1][j]) - (I[i][j-1]     <   I[i-1][j])) ;
-        pixInfo[l].Ix[6] = px * ((I[i+2][j-1]  <   I[i+1][j]) - (I[i][j-1]     <   I[i-1][j])) ;
-        pixInfo[l].Ix[7] = px * ((I[i+2][j-1]  <   I[i+1][j]) - (I[i][j-1]     <   I[i-1][j])) ;
+        pixInfo[l].lbp[3] = I[i][j+1]     <   I[i][j];
+        pixInfo[l].lbp[4] = I[i+1][j+1]   <   I[i][j];
+        pixInfo[l].lbp[5] = I[i+1][j]     <   I[i][j];
+        pixInfo[l].lbp[6] = I[i+1][j-1]   <   I[i][j];
+        pixInfo[l].lbp[7] = I[i][j-1]     <   I[i][j];
+       	  
+
+        // for (int k = 0; k < 8; ++i)
+        // {
+        //   pixInfo[l].Ix[k] = px * I[i][j+1] - I[i][j-1];
+        //   pixInfo[l].Iy[k] = py * I[i+1][j] - I[i-1][j];
+
+        // }
+        pixInfo[l].Ix[0] = px * ((I[i-1][j]    <   I[i][j+1]) - (I[i-1][j-2]   <   I[i][j-1])) ;
+        pixInfo[l].Ix[1] = px * ((I[i-1][j+1]  <   I[i][j+1]) - (I[i-1][j-1]   <   I[i][j-1])) ;
+        pixInfo[l].Ix[2] = px * ((I[i-1][j+2]  <   I[i][j+1]) - (I[i-1][j]     <   I[i][j-1])) ;
+        pixInfo[l].Ix[3] = px * ((I[i][j+2]    <   I[i][j+1]) - (I[i][j]       <   I[i][j-1])) ;
+        pixInfo[l].Ix[4] = px * ((I[i+1][j+2]  <   I[i][j+1]) - (I[i+1][j]     <   I[i][j-1])) ;
+        pixInfo[l].Ix[5] = px * ((I[i+1][j+1]  <   I[i][j+1]) - (I[i+1][j-1]   <   I[i][j-1])) ;
+        pixInfo[l].Ix[6] = px * ((I[i+1][j]    <   I[i][j+1]) - (I[i+1][j-2]   <   I[i][j-1])) ;
+        pixInfo[l].Ix[7] = px * ((I[i][j]      <   I[i][j+1]) - (I[i][j-2]     <   I[i][j-1])) ;
+        
 
         pixInfo[l].Iy[0] = py * ((I[i][j-1]    <   I[i+1][j]) - (I[i-2][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Iy[1] = py * ((I[i][j-1]    <   I[i+1][j]) - (I[i-2][j]     <   I[i-1][j])) ;
-        pixInfo[l].Iy[2] = py * ((I[i][j-1]    <   I[i+1][j]) - (I[i-2][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Iy[3] = py * ((I[i+1][j-1]  <   I[i+1][j]) - (I[i-1][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Iy[4] = py * ((I[i+1][j-1]  <   I[i+1][j]) - (I[i-1][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Iy[5] = py * ((I[i+2][j-1]  <   I[i+1][j]) - (I[i][j-1]     <   I[i-1][j])) ;
+        pixInfo[l].Iy[1] = py * ((I[i][j]      <   I[i+1][j]) - (I[i-2][j]     <   I[i-1][j])) ;
+        pixInfo[l].Iy[2] = py * ((I[i][j+1]    <   I[i+1][j]) - (I[i-2][j+1]   <   I[i-1][j])) ;
+        pixInfo[l].Iy[3] = py * ((I[i+1][j+1]  <   I[i+1][j]) - (I[i-1][j+1]   <   I[i-1][j])) ;
+        pixInfo[l].Iy[4] = py * ((I[i+2][j+1]  <   I[i+1][j]) - (I[i][j+1]     <   I[i-1][j])) ;
+        pixInfo[l].Iy[5] = py * ((I[i+2][j]    <   I[i+1][j]) - (I[i][j]       <   I[i-1][j])) ;
         pixInfo[l].Iy[6] = py * ((I[i+2][j-1]  <   I[i+1][j]) - (I[i][j-1]     <   I[i-1][j])) ;
-        pixInfo[l].Iy[7] = py * ((I[i+2][j-1]  <   I[i+1][j]) - (I[i][j-1]     <   I[i-1][j])) ;
+        pixInfo[l].Iy[7] = py * ((I[i+1][j-1]  <   I[i+1][j]) - (I[i-1][j-1]   <   I[i-1][j])) ;
+        
+        
+        
   	  
   	  l++;
   	}

@@ -110,38 +110,39 @@ double vpTemplateTrackerLBP::getCost(const vpImage<unsigned char> &I, const vpCo
 
 double vpTemplateTrackerLBP::getLBP(const vpImage<unsigned char> &I, const vpColVector &tp)
 {
-  double erreur=0;
-  double IW;
-  unsigned int Nbpoint=0;
+  // double erreur=0;
+  // double IW;
+  // unsigned int Nbpoint=0;
 
-  if(pyrInitialised)
-  {
-    templateSize=templateSizePyr[0];
-    ptTemplate=ptTemplatePyr[0];
-  }
+  // if(pyrInitialised)
+  // {
+  //   templateSize=templateSizePyr[0];
+  //   ptTemplate=ptTemplatePyr[0];
+  // }
 
-  Warp->computeCoeff(tp);
-  for(unsigned int point=0;point<templateSize;point++)
-  {
-    int i=ptTemplate[point].y;
-    int j=ptTemplate[point].x;
-    X1[0]=j;X1[1]=i;
-    Warp->computeDenom(X1,tp);
-    Warp->warpX(X1,X2,tp);
+  // Warp->computeCoeff(tp);
+  // for(unsigned int point=0;point<templateSize;point++)
+  // {
+  //   int i=ptTemplate[point].y;
+  //   int j=ptTemplate[point].x;
+  //   X1[0]=j;X1[1]=i;
+  //   Warp->computeDenom(X1,tp);
+  //   Warp->warpX(X1,X2,tp);
 
-    double j2=X2[0];
-    double i2=X2[1];
-    if((j2<I.getWidth()-1)&&(i2<I.getHeight()-1)&&(i2>0)&&(j2>0))
-    {
-      double Tij=ptTemplate[point].val;
-      IW=I.getValue(i2,j2);
-      //IW=getSubPixBspline4(I,i2,j2);
-      erreur+=((double)Tij-IW)*((double)Tij-IW);
-      Nbpoint++;
-    }
-  }
-  if(Nbpoint==0)return 10e10;
-  return erreur/Nbpoint;
+  //   double j2=X2[0];
+  //   double i2=X2[1];
+  //   if((j2<I.getWidth()-1)&&(i2<I.getHeight()-1)&&(i2>0)&&(j2>0))
+  //   {
+  //     double Tij=ptTemplate[point].val;
+  //     IW=I.getValue(i2,j2);
+  //     //IW=getSubPixBspline4(I,i2,j2);
+  //     erreur+=((double)Tij-IW)*((double)Tij-IW);
+  //     Nbpoint++;
+  //   }
+  // }
+  // if(Nbpoint==0)return 10e10;
+  // return erreur/Nbpoint;
+  return 0;
 }
 
 
