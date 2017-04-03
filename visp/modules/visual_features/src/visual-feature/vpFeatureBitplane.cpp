@@ -212,6 +212,9 @@ vpFeatureBitplane::setCameraParameters(vpCameraParameters &_cam)
 void
 vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 {
+  vpImage<double> toBlur(I.getHeight(),I.getWidth());
+  //vpImage<unsigned char> toBlur(I.getHeight(),I.getWidth());
+
   unsigned int l = 0;
   //double Ix,Iy;
 
@@ -246,37 +249,39 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 	  }
   }
 
+  vpImageFilter::gaussianBlur(I,toBlur);
+
   l = 0 ;
   for (unsigned int i = bord; i < nbr - bord ; i++)
   {
     for (unsigned int j = bord ; j < nbc - bord; j++)
   	{
-        pixInfo[l].lbp[0] = I[i-1][j-1]   <   I[i][j];
-        pixInfo[l].lbp[1] = I[i-1][j]     <   I[i][j];
-        pixInfo[l].lbp[2] = I[i-1][j+1]   <   I[i][j];
-        pixInfo[l].lbp[3] = I[i][j+1]     <   I[i][j];
-        pixInfo[l].lbp[4] = I[i+1][j+1]   <   I[i][j];
-        pixInfo[l].lbp[5] = I[i+1][j]     <   I[i][j];
-        pixInfo[l].lbp[6] = I[i+1][j-1]   <   I[i][j];
-        pixInfo[l].lbp[7] = I[i][j-1]     <   I[i][j];
+        pixInfo[l].lbp[0] = toBlur[i-1][j-1]   <   toBlur[i][j];
+        pixInfo[l].lbp[1] = toBlur[i-1][j]     <   toBlur[i][j];
+        pixInfo[l].lbp[2] = toBlur[i-1][j+1]   <   toBlur[i][j];
+        pixInfo[l].lbp[3] = toBlur[i][j+1]     <   toBlur[i][j];
+        pixInfo[l].lbp[4] = toBlur[i+1][j+1]   <   toBlur[i][j];
+        pixInfo[l].lbp[5] = toBlur[i+1][j]     <   toBlur[i][j];
+        pixInfo[l].lbp[6] = toBlur[i+1][j-1]   <   toBlur[i][j];
+        pixInfo[l].lbp[7] = toBlur[i][j-1]     <   toBlur[i][j];
 
-        pixInfo[l].Ix[0] = px * ((I[i-1][j]    <   I[i][j+1]) - (I[i-1][j-2]   <   I[i][j-1])) ;
-        pixInfo[l].Ix[1] = px * ((I[i-1][j+1]  <   I[i][j+1]) - (I[i-1][j-1]   <   I[i][j-1])) ;
-        pixInfo[l].Ix[2] = px * ((I[i-1][j+2]  <   I[i][j+1]) - (I[i-1][j]     <   I[i][j-1])) ;
-        pixInfo[l].Ix[3] = px * ((I[i][j+2]    <   I[i][j+1]) - (I[i][j]       <   I[i][j-1])) ;
-        pixInfo[l].Ix[4] = px * ((I[i+1][j+2]  <   I[i][j+1]) - (I[i+1][j]     <   I[i][j-1])) ;
-        pixInfo[l].Ix[5] = px * ((I[i+1][j+1]  <   I[i][j+1]) - (I[i+1][j-1]   <   I[i][j-1])) ;
-        pixInfo[l].Ix[6] = px * ((I[i+1][j]    <   I[i][j+1]) - (I[i+1][j-2]   <   I[i][j-1])) ;
-        pixInfo[l].Ix[7] = px * ((I[i][j]      <   I[i][j+1]) - (I[i][j-2]     <   I[i][j-1])) ;
+        pixInfo[l].Ix[0] = px * ((toBlur[i-1][j]    <   toBlur[i][j+1]) - (toBlur[i-1][j-2]   <   toBlur[i][j-1])) ;
+        pixInfo[l].Ix[1] = px * ((toBlur[i-1][j+1]  <   toBlur[i][j+1]) - (toBlur[i-1][j-1]   <   toBlur[i][j-1])) ;
+        pixInfo[l].Ix[2] = px * ((toBlur[i-1][j+2]  <   toBlur[i][j+1]) - (toBlur[i-1][j]     <   toBlur[i][j-1])) ;
+        pixInfo[l].Ix[3] = px * ((toBlur[i][j+2]    <   toBlur[i][j+1]) - (toBlur[i][j]       <   toBlur[i][j-1])) ;
+        pixInfo[l].Ix[4] = px * ((toBlur[i+1][j+2]  <   toBlur[i][j+1]) - (toBlur[i+1][j]     <   toBlur[i][j-1])) ;
+        pixInfo[l].Ix[5] = px * ((toBlur[i+1][j+1]  <   toBlur[i][j+1]) - (toBlur[i+1][j-1]   <   toBlur[i][j-1])) ;
+        pixInfo[l].Ix[6] = px * ((toBlur[i+1][j]    <   toBlur[i][j+1]) - (toBlur[i+1][j-2]   <   toBlur[i][j-1])) ;
+        pixInfo[l].Ix[7] = px * ((toBlur[i][j]      <   toBlur[i][j+1]) - (toBlur[i][j-2]     <   toBlur[i][j-1])) ;
         
-        pixInfo[l].Iy[0] = py * ((I[i][j-1]    <   I[i+1][j]) - (I[i-2][j-1]   <   I[i-1][j])) ;
-        pixInfo[l].Iy[1] = py * ((I[i][j]      <   I[i+1][j]) - (I[i-2][j]     <   I[i-1][j])) ;
-        pixInfo[l].Iy[2] = py * ((I[i][j+1]    <   I[i+1][j]) - (I[i-2][j+1]   <   I[i-1][j])) ;
-        pixInfo[l].Iy[3] = py * ((I[i+1][j+1]  <   I[i+1][j]) - (I[i-1][j+1]   <   I[i-1][j])) ;
-        pixInfo[l].Iy[4] = py * ((I[i+2][j+1]  <   I[i+1][j]) - (I[i][j+1]     <   I[i-1][j])) ;
-        pixInfo[l].Iy[5] = py * ((I[i+2][j]    <   I[i+1][j]) - (I[i][j]       <   I[i-1][j])) ;
-        pixInfo[l].Iy[6] = py * ((I[i+2][j-1]  <   I[i+1][j]) - (I[i][j-1]     <   I[i-1][j])) ;
-        pixInfo[l].Iy[7] = py * ((I[i+1][j-1]  <   I[i+1][j]) - (I[i-1][j-1]   <   I[i-1][j])) ;
+        pixInfo[l].Iy[0] = py * ((toBlur[i][j-1]    <   toBlur[i+1][j]) - (toBlur[i-2][j-1]   <   toBlur[i-1][j])) ;
+        pixInfo[l].Iy[1] = py * ((toBlur[i][j]      <   toBlur[i+1][j]) - (toBlur[i-2][j]     <   toBlur[i-1][j])) ;
+        pixInfo[l].Iy[2] = py * ((toBlur[i][j+1]    <   toBlur[i+1][j]) - (toBlur[i-2][j+1]   <   toBlur[i-1][j])) ;
+        pixInfo[l].Iy[3] = py * ((toBlur[i+1][j+1]  <   toBlur[i+1][j]) - (toBlur[i-1][j+1]   <   toBlur[i-1][j])) ;
+        pixInfo[l].Iy[4] = py * ((toBlur[i+2][j+1]  <   toBlur[i+1][j]) - (toBlur[i][j+1]     <   toBlur[i-1][j])) ;
+        pixInfo[l].Iy[5] = py * ((toBlur[i+2][j]    <   toBlur[i+1][j]) - (toBlur[i][j]       <   toBlur[i-1][j])) ;
+        pixInfo[l].Iy[6] = py * ((toBlur[i+2][j-1]  <   toBlur[i+1][j]) - (toBlur[i][j-1]     <   toBlur[i-1][j])) ;
+        pixInfo[l].Iy[7] = py * ((toBlur[i+1][j-1]  <   toBlur[i+1][j]) - (toBlur[i-1][j-1]   <   toBlur[i-1][j])) ;
   	  
 
   	  
@@ -285,18 +290,23 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   }     
 }
 
-vpImage<unsigned char> * vpFeatureBitplane::getAsImage()
+void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
 {
-  vpImage<unsigned char> ret(nbc-2*bord, nbr-2*bord);
+  ret.resize(nbr-2*bord, nbc-2*bord);
+
+  vpImage<double> temp(nbr-2*bord, nbc-2*bord);
+    std::cout << temp.getHeight() << " " << temp.getWidth() << std::endl;
+
   int l = 0;
-  for (int i = bord; i < nbr-bord; i++) {
-    for (int j = bord; j < nbc-bord; j++) {
-      ret[i][j] = pixInfo[l].lbp[0];
+  for (unsigned int i = 0; i < nbr-2*bord; i++) {
+    for (unsigned int j = 0; j < nbc-2*bord; j++) {
+      temp[i][j] = (double)pixInfo[l].Ix[0];
+      //std::cout << i << " " << j << " " << l << std::endl;
+
       ++l;
     }
   }
-  std::cout << "aa" << std::endl;
-  return ret;
+  vpImageConvert::convert(temp,ret);
 }
 
 

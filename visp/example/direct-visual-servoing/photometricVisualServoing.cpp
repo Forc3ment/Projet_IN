@@ -461,11 +461,8 @@ main(int argc, const char ** argv)
 
       // ---------------------------------------------------------------------------
       filename = vpIoTools::createFilePath(ipath, "ViSP-images//circle/circle.ppm");
-      std::cout << "a" << std::endl;
       vpImage<unsigned char> Ia;
-      std::cout << "aaa" << std::endl;
-      Ia = sI.getAsImage();
-      std::cout << "b" << std::endl;
+      sI.getAsImage(Ia);
       /*try {
         vpImageIo::read(Ia, filename);
       }
@@ -473,16 +470,18 @@ main(int argc, const char ** argv)
         std::cout << "Cannot read image \"" << filename << "\"" << std::endl;
         return -1;
       }*/
+
   #if defined VISP_HAVE_X11
-      vpDisplayX d;
+      vpDisplayX d2;
   #endif
       std::cout << Ia.getWidth() << " " << Ia.getHeight() << std::endl;
-      d.init(Ia, 20, 10, "Photometric visual servoing : s") ;
+      d2.init(Ia, 20, 300, "Photometric visual servoing : s") ;
       vpDisplay::setTitle(Ia, "My image");
       vpDisplay::display(Ia);
       vpDisplay::flush(Ia);
       std::cout << "A click to quit..." << std::endl;
-      vpDisplay::getClick(Ia);//*/
+      //vpDisplay::getClick(Ia);
+
       // ---------------------------------------------------------------------------
 
       std::cout << "lambda = " << lambda << "  mu = " << mu ;

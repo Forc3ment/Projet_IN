@@ -124,7 +124,7 @@ public:
   void set_Z(const double Z) ;
   double get_Z() const;
 
-  vpImage<unsigned char> & getAsImage();
+  void getAsImage(vpImage<unsigned char> & ret);
 
   /*
     vpBasicFeature method instantiation
