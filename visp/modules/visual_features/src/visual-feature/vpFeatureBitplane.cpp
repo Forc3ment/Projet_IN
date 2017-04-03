@@ -285,6 +285,19 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   }     
 }
 
+vpImage<unsigned char> * vpFeatureBitplane::getAsImage()
+{
+  vpImage<unsigned char> ret(nbc-2*bord, nbr-2*bord);
+  int l = 0;
+  for (int i = bord; i < nbr-bord; i++) {
+    for (int j = bord; j < nbc-bord; j++) {
+      ret[i][j] = pixInfo[l].lbp[0];
+      ++l;
+    }
+  }
+  std::cout << "aa" << std::endl;
+  return ret;
+}
 
 
 /*!

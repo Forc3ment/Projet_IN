@@ -320,7 +320,7 @@ main(int argc, const char ** argv)
     vpImage<unsigned char> Idiff ;
     Idiff = I ;
 
-    vpImageTools::imageDifference(I,Id,Idiff) ;
+    vpImageTools::imageDifference(I,Id,Idiff);
 
     // Affiche de l'image de difference
 #if defined VISP_HAVE_X11
@@ -351,14 +351,14 @@ main(int argc, const char ** argv)
     // current visual feature built from the image
     // (actually, this is the image...)
     //vpFeatureBitplane sI ;
-    vpFeatureLuminance sI ;
+    vpFeatureBitplane sI ;
     sI.init( I.getHeight(), I.getWidth(), Z) ;
     sI.setCameraParameters(cam) ;
     sI.buildFrom(I) ;
 
     // desired visual feature built from the image
     //vpFeatureBitplane sId ;
-    vpFeatureLuminance sId ;
+    vpFeatureBitplane sId ;
     sId.init(I.getHeight(), I.getWidth(),  Z) ;
     sId.setCameraParameters(cam) ;
     sId.buildFrom(Id) ;
@@ -414,7 +414,7 @@ main(int argc, const char ** argv)
 
       //  Acquire the new image
       sim.setCameraPosition(cMo) ;
-      sim.getImage(I,cam) ;
+      sim.getImage(I,cam);
 #if defined(VISP_HAVE_X11) || defined(VISP_HAVE_GDI) || defined(VISP_HAVE_GTK) 
       if (opt_display) {
         vpDisplay::display(I) ;
@@ -456,6 +456,34 @@ main(int argc, const char ** argv)
 
         v = - lambda*e;
       }
+
+
+
+      // ---------------------------------------------------------------------------
+      filename = vpIoTools::createFilePath(ipath, "ViSP-images//circle/circle.ppm");
+      std::cout << "a" << std::endl;
+      vpImage<unsigned char> Ia;
+      std::cout << "aaa" << std::endl;
+      Ia = sI.getAsImage();
+      std::cout << "b" << std::endl;
+      /*try {
+        vpImageIo::read(Ia, filename);
+      }
+      catch(...) {
+        std::cout << "Cannot read image \"" << filename << "\"" << std::endl;
+        return -1;
+      }*/
+  #if defined VISP_HAVE_X11
+      vpDisplayX d;
+  #endif
+      std::cout << Ia.getWidth() << " " << Ia.getHeight() << std::endl;
+      d.init(Ia, 20, 10, "Photometric visual servoing : s") ;
+      vpDisplay::setTitle(Ia, "My image");
+      vpDisplay::display(Ia);
+      vpDisplay::flush(Ia);
+      std::cout << "A click to quit..." << std::endl;
+      vpDisplay::getClick(Ia);//*/
+      // ---------------------------------------------------------------------------
 
       std::cout << "lambda = " << lambda << "  mu = " << mu ;
       std::cout << " |Tc| = " << sqrt(v.sumSquare()) << std::endl;
