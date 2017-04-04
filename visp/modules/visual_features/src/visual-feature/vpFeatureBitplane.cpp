@@ -251,43 +251,32 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 
   vpImageFilter::gaussianBlur(I,toBlur);
 
-  l = 0 ;
+  int width = nbc - 2*bord;
+  int parsed[16] = {-1, -1, -1, 0, -1, 1, 0, 1, 1, 1, 1, 0, 1, -1, 0, -1};
   for (unsigned int i = bord; i < nbr - bord ; i++)
   {
     for (unsigned int j = bord ; j < nbc - bord; j++)
   	{
-        pixInfo[l].lbp[0] = toBlur[i-1][j-1]   <   toBlur[i][j];
-        pixInfo[l].lbp[1] = toBlur[i-1][j]     <   toBlur[i][j];
-        pixInfo[l].lbp[2] = toBlur[i-1][j+1]   <   toBlur[i][j];
-        pixInfo[l].lbp[3] = toBlur[i][j+1]     <   toBlur[i][j];
-        pixInfo[l].lbp[4] = toBlur[i+1][j+1]   <   toBlur[i][j];
-        pixInfo[l].lbp[5] = toBlur[i+1][j]     <   toBlur[i][j];
-        pixInfo[l].lbp[6] = toBlur[i+1][j-1]   <   toBlur[i][j];
-        pixInfo[l].lbp[7] = toBlur[i][j-1]     <   toBlur[i][j];
+      int l = (j-bord) + (i-bord)*width;
+      //std::cout << j << "_" << l << " " << nbr << " " << nbc << " " << dim_s << std::endl;
+      for (int ii = 0; ii < 8; ii++)
+        pixInfo[l].lbp[ii] = toBlur[i+parsed[2*ii]][j+parsed[2*ii+1]] < toBlur[i][j];
+    }
+  }
+  std::cout << "a" << std::endl;
 
-        pixInfo[l].Ix[0] = px * ((toBlur[i-1][j]    <   toBlur[i][j+1]) - (toBlur[i-1][j-2]   <   toBlur[i][j-1])) ;
-        pixInfo[l].Ix[1] = px * ((toBlur[i-1][j+1]  <   toBlur[i][j+1]) - (toBlur[i-1][j-1]   <   toBlur[i][j-1])) ;
-        pixInfo[l].Ix[2] = px * ((toBlur[i-1][j+2]  <   toBlur[i][j+1]) - (toBlur[i-1][j]     <   toBlur[i][j-1])) ;
-        pixInfo[l].Ix[3] = px * ((toBlur[i][j+2]    <   toBlur[i][j+1]) - (toBlur[i][j]       <   toBlur[i][j-1])) ;
-        pixInfo[l].Ix[4] = px * ((toBlur[i+1][j+2]  <   toBlur[i][j+1]) - (toBlur[i+1][j]     <   toBlur[i][j-1])) ;
-        pixInfo[l].Ix[5] = px * ((toBlur[i+1][j+1]  <   toBlur[i][j+1]) - (toBlur[i+1][j-1]   <   toBlur[i][j-1])) ;
-        pixInfo[l].Ix[6] = px * ((toBlur[i+1][j]    <   toBlur[i][j+1]) - (toBlur[i+1][j-2]   <   toBlur[i][j-1])) ;
-        pixInfo[l].Ix[7] = px * ((toBlur[i][j]      <   toBlur[i][j+1]) - (toBlur[i][j-2]     <   toBlur[i][j-1])) ;
-        
-        pixInfo[l].Iy[0] = py * ((toBlur[i][j-1]    <   toBlur[i+1][j]) - (toBlur[i-2][j-1]   <   toBlur[i-1][j])) ;
-        pixInfo[l].Iy[1] = py * ((toBlur[i][j]      <   toBlur[i+1][j]) - (toBlur[i-2][j]     <   toBlur[i-1][j])) ;
-        pixInfo[l].Iy[2] = py * ((toBlur[i][j+1]    <   toBlur[i+1][j]) - (toBlur[i-2][j+1]   <   toBlur[i-1][j])) ;
-        pixInfo[l].Iy[3] = py * ((toBlur[i+1][j+1]  <   toBlur[i+1][j]) - (toBlur[i-1][j+1]   <   toBlur[i-1][j])) ;
-        pixInfo[l].Iy[4] = py * ((toBlur[i+2][j+1]  <   toBlur[i+1][j]) - (toBlur[i][j+1]     <   toBlur[i-1][j])) ;
-        pixInfo[l].Iy[5] = py * ((toBlur[i+2][j]    <   toBlur[i+1][j]) - (toBlur[i][j]       <   toBlur[i-1][j])) ;
-        pixInfo[l].Iy[6] = py * ((toBlur[i+2][j-1]  <   toBlur[i+1][j]) - (toBlur[i][j-1]     <   toBlur[i-1][j])) ;
-        pixInfo[l].Iy[7] = py * ((toBlur[i+1][j-1]  <   toBlur[i+1][j]) - (toBlur[i-1][j-1]   <   toBlur[i-1][j])) ;
-  	  
-
-  	  
-  	  l++;
+  for (unsigned int i = 1; i < nbr - 2*bord - 1 ; i++)
+  {
+    for (unsigned int j = 1 ; j < nbc - 2*bord - 1; j++)
+    {
+      int l = j + i*width;
+      for (int ii = 0; ii < 8; ii+=1) {
+        pixInfo[l].Ix[ii] = px * (pixInfo[(j+1) + i*width].lbp[ii]) - (pixInfo[(j-1) + i*width].lbp[ii]);        
+        pixInfo[l].Iy[ii] = py * (pixInfo[j + (i+1)*width].lbp[ii]) - (pixInfo[j + (i-1)*width].lbp[ii]);
+      }
   	}
-  }     
+  }
+  std::cout << "a" << std::endl;    
 }
 
 void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
