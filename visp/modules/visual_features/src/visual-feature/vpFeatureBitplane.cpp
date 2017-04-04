@@ -252,7 +252,7 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   vpImageFilter::gaussianBlur(I,toBlur);
 
   int width = nbc - 2*bord;
-  int parsed[16] = {-1, -1, -1, 0, -1, 1, 0, 1, 1, 1, 1, 0, 1, -1, 0, -1};
+  int parsed[16] = {-1, -1, -1, 0, -1, 1, 0, 1, 1, 1, 1, 0, 1, -1, 0, -1}; // duos of i & j used for lbp
   for (unsigned int i = bord; i < nbr - bord ; i++)
   {
     for (unsigned int j = bord ; j < nbc - bord; j++)
@@ -286,13 +286,11 @@ void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
   vpImage<double> temp(nbr-2*bord, nbc-2*bord);
     std::cout << temp.getHeight() << " " << temp.getWidth() << std::endl;
 
-  int l = 0;
   for (unsigned int i = 0; i < nbr-2*bord; i++) {
     for (unsigned int j = 0; j < nbc-2*bord; j++) {
+      int l = (j-bord) + (i-bord)*width;
       temp[i][j] = (double)pixInfo[l].Ix[0];
       //std::cout << i << " " << j << " " << l << std::endl;
-
-      ++l;
     }
   }
   vpImageConvert::convert(temp,ret);
