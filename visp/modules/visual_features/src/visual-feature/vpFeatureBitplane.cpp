@@ -270,12 +270,12 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
     {
       int l = j + i*width; // indice for 1-dimensionnal array
       for (int ii = 0; ii < 8; ii++) {
-        pixInfo[l].Ix[ii] = px * (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]);        
-        pixInfo[l].Iy[ii] = py * (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]);
+        pixInfo[l].Ix[ii] = px * ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );        
+        pixInfo[l].Iy[ii] = py * ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
       }
   	}
   }
-  std::cout << "a" << std::endl;    
+  std::cout << "a" << std::endl; 
 }
 
 void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)

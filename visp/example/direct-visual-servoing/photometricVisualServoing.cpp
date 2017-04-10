@@ -398,7 +398,7 @@ main(int argc, const char ** argv)
     double lambdaGN;
 
     mu       =  0.01;
-    lambda   = 30 ;
+    lambda   = 3000 ;
     lambdaGN = 30;
 
     // set a velocity control mode
