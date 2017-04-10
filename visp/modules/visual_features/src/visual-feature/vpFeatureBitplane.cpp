@@ -251,15 +251,14 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 
   vpImageFilter::gaussianBlur(I,toBlur);
 
-  int width = nbc - 2*bord;
+  int width = nbc - 2*bord; // width of the pic without bords
   int parsed[16] = {-1, -1, -1, 0, -1, 1, 0, 1, 1, 1, 1, 0, 1, -1, 0, -1}; // duos of i & j used for lbp
   for (unsigned int i = bord; i < nbr - bord ; i++)
   {
     for (unsigned int j = bord ; j < nbc - bord; j++)
   	{
-      int l = (j-bord) + (i-bord)*width;
-      //std::cout << j << "_" << l << " " << nbr << " " << nbc << " " << dim_s << std::endl;
-      for (int ii = 0; ii < 8; ii++)
+      int l = (j-bord) + (i-bord)*width; // indice for 1-dimensionnal array (pixInfo begins at 0 so -bord)
+      for (int ii = 0; ii < 8; ii++) // for each lbp
         pixInfo[l].lbp[ii] = toBlur[i+parsed[2*ii]][j+parsed[2*ii+1]] < toBlur[i][j];
     }
   }
@@ -269,10 +268,10 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   {
     for (unsigned int j = 1 ; j < nbc - 2*bord - 1; j++)
     {
-      int l = j + i*width;
-      for (int ii = 0; ii < 8; ii+=1) {
-        pixInfo[l].Ix[ii] = px * (pixInfo[(j+1) + i*width].lbp[ii]) - (pixInfo[(j-1) + i*width].lbp[ii]);        
-        pixInfo[l].Iy[ii] = py * (pixInfo[j + (i+1)*width].lbp[ii]) - (pixInfo[j + (i-1)*width].lbp[ii]);
+      int l = j + i*width; // indice for 1-dimensionnal array
+      for (int ii = 0; ii < 8; ii++) {
+        pixInfo[l].Ix[ii] = px * (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]);        
+        pixInfo[l].Iy[ii] = py * (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]);
       }
   	}
   }
@@ -286,9 +285,10 @@ void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
   vpImage<double> temp(nbr-2*bord, nbc-2*bord);
     std::cout << temp.getHeight() << " " << temp.getWidth() << std::endl;
 
+  int width = nbc - 2*bord;
   for (unsigned int i = 0; i < nbr-2*bord; i++) {
     for (unsigned int j = 0; j < nbc-2*bord; j++) {
-      int l = (j-bord) + (i-bord)*width;
+      int l = j + i*width;
       temp[i][j] = (double)pixInfo[l].Ix[0];
       //std::cout << i << " " << j << " " << l << std::endl;
     }
