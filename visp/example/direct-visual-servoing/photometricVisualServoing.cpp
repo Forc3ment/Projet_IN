@@ -57,6 +57,7 @@
 #include <visp3/gui/vpDisplayOpenCV.h>
 #include <visp3/gui/vpDisplayD3D.h>
 #include <visp3/gui/vpDisplayX.h>
+#include <visp3/gui/vpPlot.h>
 
 #include <visp3/visual_features/vpFeatureBitplane.h>
 #include <visp3/visual_features/vpFeatureLuminance.h>
@@ -68,6 +69,7 @@
 
 #include <visp3/io/vpParseArgv.h>
 #include <visp3/core/vpIoTools.h>
+
 
 // List of allowed command line options
 #define GETOPTARGS	"cdi:n:h"
@@ -222,7 +224,7 @@ main(int argc, const char ** argv)
     }
 
     vpImage<unsigned char> Itexture ;
-    filename = vpIoTools::createFilePath(ipath, "");//, "ViSP-images//circle/image.0000.pgm");
+    filename = vpIoTools::createFilePath(ipath, "ViSP-images/bacall_and_bogart.jpg");//, "ViSP-images//circle/image.0000.pgm");
     vpImageIo::read(Itexture,filename);
 
     vpColVector X[4];
@@ -298,6 +300,8 @@ main(int argc, const char ** argv)
     //camera desired position
     vpHomogeneousMatrix cMo ;
     cMo.buildFrom(0,0,1.2,vpMath::rad(15),vpMath::rad(-5),vpMath::rad(20));
+        cMo.buildFrom(0.02,0,1,vpMath::rad(0),vpMath::rad(-0),vpMath::rad(0));
+
     vpHomogeneousMatrix wMo; // Set to identity
     vpHomogeneousMatrix wMc; // Camera position in the world frame
 
@@ -366,6 +370,8 @@ main(int argc, const char ** argv)
     // Matrice d'interaction, Hessien, erreur,...
     vpMatrix Lsd;   // matrice d'interaction a la position desiree
     vpMatrix Hsd;  // hessien a la position desiree
+    vpMatrix lplus;
+    vpMatrix toto;
     vpMatrix H ; // Hessien utilise pour le levenberg-Marquartd
     vpColVector error ; // Erreur I-I*
 
@@ -397,8 +403,8 @@ main(int argc, const char ** argv)
     double mu ;  // mu = 0 : Gauss Newton ; mu != 0  : LM
     double lambdaGN;
 
-    mu       =  0.01;
-    lambda   = 3000 ;
+    mu       =  0;
+    lambda   = 300 ;
     lambdaGN = 30;
 
     // set a velocity control mode
@@ -409,6 +415,19 @@ main(int argc, const char ** argv)
     int iterGN = 90 ; // swicth to Gauss Newton after iterGN iterations
 
     double normeError = 0;
+    int index = 0;
+    vpPlot A(3,700,700,400,0,"Plot");
+    A.initGraph(0,1);
+    A.initGraph(1,3);
+    A.initGraph(2,3);
+    A.setColor(1,0,vpColor::red);
+    A.setColor(1,1,vpColor::green);
+    A.setColor(1,2,vpColor::blue);
+
+    A.setColor(2,0,vpColor::red);
+    A.setColor(2,1,vpColor::green);
+    A.setColor(2,2,vpColor::blue);
+
     do {
       std::cout << "--------------------------------------------" << iter++ << std::endl ;
 
@@ -443,7 +462,7 @@ main(int argc, const char ** argv)
       {
         if (iter > iterGN)
         {
-          mu = 0.01 ;
+          mu = 0 ;
           lambda = lambdaGN;
         }
 
@@ -454,7 +473,31 @@ main(int argc, const char ** argv)
         //	compute the control law
         e = H * Lsd.t() *error ;
 
+        lplus = H * Lsd.t();
+        toto  = lplus * Lsd ;
+        
+
+        for (int i = 0; i < 6; ++i)
+        {
+          for (int j = 0; j < 6; ++j)
+          {
+            std::cout << toto[i][j] << "  ";
+          }
+          std::cout << std::endl;
+        }
+
+
         v = - lambda*e;
+
+        A.plot(0,0,index,normeError);
+        A.plot(1,0,index,v[0]);
+        A.plot(1,1,index,v[1]);
+        A.plot(1,2,index,v[2]);
+        A.plot(2,0,index,v[3]);
+        A.plot(2,1,index,v[4]);
+        A.plot(2,2,index,v[5]);
+        
+        index++;
       }
 
 
