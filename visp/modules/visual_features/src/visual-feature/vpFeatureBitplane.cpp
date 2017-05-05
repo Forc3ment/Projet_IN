@@ -302,22 +302,12 @@ void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
 void
 vpFeatureBitplane::interaction(vpMatrix &L)
 {  
-  L.resize(dim_s*8,6) ;
+  L.resize(dim_s*8,2) ;
 
   for(unsigned int m = 0; m < dim_s; m++)
   {
     double* Ix = pixInfo[m].Ix;
     double* Iy = pixInfo[m].Iy;
-
-    // for (int i = 0; i < 8; ++i)
-    // {
-    //   std::cout << Ix[i] << " ";
-    //   std::cout << pixInfo[m].Ix[i] << " ";
-    //   if(Ix[i]<-1000 || Ix[i]>1000) std::cout << "sdvigsryivgosrygvozygrfSOUGYFVOUGYFouGYFOUGYEFuygFOUGY" << std::endl;
-
-    // }
-    // std::cout << std::endl;
-
 
     double x = pixInfo[m].x ;
     double y = pixInfo[m].y ;
@@ -330,10 +320,10 @@ vpFeatureBitplane::interaction(vpMatrix &L)
       int j = m*8 + i;
       L[j][0] = Ix[i] * Zinv;
       L[j][1] = Iy[i] * Zinv;
-      L[j][2] = -(x*Ix[i] + y*Iy[i]) * Zinv;
-      L[j][3] = -Ix[i]*x*y - (1+y*y)*Iy[i];
-      L[j][4] = (1+x*x)*Ix[i] + Iy[i]*x*y;
-      L[j][5] = Iy[i]*x - Ix[i]*y;
+      // L[j][2] = -(x*Ix[i] + y*Iy[i]) * Zinv;
+      // L[j][3] = -Ix[i]*x*y - (1+y*y)*Iy[i];
+      // L[j][4] = (1+x*x)*Ix[i] + Iy[i]*x*y;
+      // L[j][5] = Iy[i]*x - Ix[i]*y;
     }
   }
 }
