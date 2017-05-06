@@ -228,7 +228,7 @@ main(int argc, const char ** argv)
     }
 
     vpImage<unsigned char> Itexture ;
-    filename = vpIoTools::createFilePath(ipath, "ViSP-images/bacall_and_bogart.jpg");//, "ViSP-images//circle/image.0000.pgm");
+    filename = vpIoTools::createFilePath(ipath, "");//, "ViSP-images//circle/image.0000.pgm");
     vpImageIo::read(Itexture,filename);
 
     vpColVector X[4];
