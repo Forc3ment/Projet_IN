@@ -43,6 +43,7 @@
 #include <visp3/core/vpDebug.h>
 
 #include <visp3/core/vpImage.h>
+#include <visp3/core/vpImageConvert.h>
 #include <visp3/io/vpImageIo.h>
 #include <visp3/core/vpImageTools.h>
 
@@ -409,11 +410,46 @@ main(int argc, const char ** argv)
     int iterGN = 90 ; // swicth to Gauss Newton after iterGN iterations
 
     double normeError = 0;
+
+    // --------- Supposed to draw the error map, but I is empty :(
+    int bord = 10;
+    vpImage<double> test(I.getRows(), I.getCols());
+    for (unsigned int i = bord*10; i < I.getRows() - 10*bord - 1; i++)
+    {
+      for (unsigned int j = bord*10; j < I.getCols() - 10*bord - 1; j++)
+      {
+        vpHomogeneousMatrix cTest;
+        cTest.buildFrom(i*.01, j*.01, 1.2, vpMath::rad(15),vpMath::rad(-5),vpMath::rad(20));
+        sim.setCameraPosition(cTest);
+        I = 0;
+        sim.getImage(I, cam);
+        
+        sI.buildFrom(I);
+        sI.error(sId, error);
+        normeError = (error.sumSquare());
+        test[i][j] = normeError;
+        std::cout << normeError << std::endl;
+    vpDisplay::display(I);
+    vpDisplay::flush(I);
+    vpDisplay::getClick(I);
+    vpImageIo::write(I, "peutetre.pgm");
+      }
+    }
+    vpImage<unsigned char> testU8;
+    vpImageConvert::convert(test, testU8);
+    vpDisplayX d2;
+    vpDisplay::display(testU8);
+    vpDisplay::flush(testU8);
+    vpDisplay::getClick(testU8);
+    //vpImageIo::write(testU8, "peutetre.pgm");
+    // -------------------------------------------------------------
+
     do {
+    std::cout << "rows:" << Hsd.getRows() << " " << Hsd.getCols() << std::endl;
       std::cout << "--------------------------------------------" << iter++ << std::endl ;
 
       //  Acquire the new image
-      sim.setCameraPosition(cMo) ;
+      sim.setCameraPosition(cMo);
       sim.getImage(I,cam);
 #if defined(VISP_HAVE_X11) || defined(VISP_HAVE_GDI) || defined(VISP_HAVE_GTK) 
       if (opt_display) {
@@ -422,20 +458,21 @@ main(int argc, const char ** argv)
       }
 #endif
       vpImageTools::imageDifference(I,Id,Idiff) ;
-#if defined(VISP_HAVE_X11) || defined(VISP_HAVE_GDI) || defined(VISP_HAVE_GTK) 
+#if defined(VISP_HAVE_X11) || defined(VISP_HAVE_GDI) || defined(VISP_HAVE_GTK)
       if (opt_display) {
         vpDisplay::display(Idiff) ;
         vpDisplay::flush(Idiff) ;
       }
 #endif
+
       // Compute current visual feature
-      sI.buildFrom(I) ;
+      sI.buildFrom(I);
 
       // compute current error
       sI.error(sId,error) ;
 
       normeError = (error.sumSquare());
-      std::cout << "|e| "<<normeError <<std::endl ;
+      std::cout << "|e| "<<normeError <<std::endl;
 
       // double t = vpTime::measureTimeMs() ;
 
@@ -456,33 +493,6 @@ main(int argc, const char ** argv)
 
         v = - lambda*e;
       }
-
-
-
-      // ---------------------------------------------------------------------------
-      filename = vpIoTools::createFilePath(ipath, "ViSP-images//circle/circle.ppm");
-      vpImage<unsigned char> Ia;
-      sI.getAsImage(Ia);
-      /*try {
-        vpImageIo::read(Ia, filename);
-      }
-      catch(...) {
-        std::cout << "Cannot read image \"" << filename << "\"" << std::endl;
-        return -1;
-      }*/
-
-  #if defined VISP_HAVE_X11
-      vpDisplayX d2;
-  #endif
-      std::cout << Ia.getWidth() << " " << Ia.getHeight() << std::endl;
-      d2.init(Ia, 20, 300, "Photometric visual servoing : s") ;
-      vpDisplay::setTitle(Ia, "My image");
-      vpDisplay::display(Ia);
-      vpDisplay::flush(Ia);
-      std::cout << "A click to quit..." << std::endl;
-      //vpDisplay::getClick(Ia);
-
-      // ---------------------------------------------------------------------------
 
       std::cout << "lambda = " << lambda << "  mu = " << mu ;
       std::cout << " |Tc| = " << sqrt(v.sumSquare()) << std::endl;

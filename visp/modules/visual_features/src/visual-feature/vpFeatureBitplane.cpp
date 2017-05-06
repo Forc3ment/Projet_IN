@@ -257,25 +257,24 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
   {
     for (unsigned int j = bord ; j < nbc - bord; j++)
   	{
-      int l = (j-bord) + (i-bord)*width; // indice for 1-dimensionnal array (pixInfo begins at 0 so -bord)
+      l = (j-bord) + (i-bord)*width; // indice for 1-dimensionnal array (pixInfo begins at 0 so -bord)
       for (int ii = 0; ii < 8; ii++) // for each lbp
         pixInfo[l].lbp[ii] = toBlur[i+parsed[2*ii]][j+parsed[2*ii+1]] < toBlur[i][j];
     }
   }
-  std::cout << "a" << std::endl;
 
   for (unsigned int i = 1; i < nbr - 2*bord - 1 ; i++)
   {
     for (unsigned int j = 1 ; j < nbc - 2*bord - 1; j++)
     {
-      int l = j + i*width; // indice for 1-dimensionnal array
+      l = j + i*width; // indice for 1-dimensionnal array
       for (int ii = 0; ii < 8; ii++) {
-        pixInfo[l].Ix[ii] = px * ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );        
+        pixInfo[l].Ix[ii] = px * ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );
         pixInfo[l].Iy[ii] = py * ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
+        if (pixInfo[l].Ix[ii] < -1000 || pixInfo[l].Ix[ii] > 1000) std::cout << j << " jherrrrrrrrrrrrrrrrrrrrrrrbuehgbfuhrgbeugbergbgbuiegbvergbvbvufgberughreuheuigerbruuiyaeiugyuegigiugyiurgyrughruyrhgurhgrughrughrughrughrurhgurghrugrughrughrugrhgurhgurgh " << i << std::endl;
       }
   	}
   }
-  std::cout << "a" << std::endl; 
 }
 
 void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
@@ -318,6 +317,7 @@ vpFeatureBitplane::interaction(vpMatrix &L)
 
     for (int i = 0; i < 8; ++i)
     {
+      if (Ix[i] < -1000 || Ix[i] > 1000) std::cout << m << " 6jherrrrrrrrrrrrrrrrrrrrrrrbuehgbfuhrgbeugbergbgbuiegbvergbvbvufgberughreuheuigerbruuiyaeiugyuegigiugyiurgyrughruyrhgurhgrughrughrughrughrurhgurghrugrughrughrugrhgurhgurgh " << i << std::endl;
       int j = m*8 + i;
       L[j][0] = Ix[i] * Zinv;
       L[j][1] = Iy[i] * Zinv;
