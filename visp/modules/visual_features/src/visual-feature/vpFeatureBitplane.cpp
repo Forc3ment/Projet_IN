@@ -270,18 +270,12 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
       for (int ii = 0; ii < 8; ii++) {
         pixInfo[l].Ix[ii] = px * ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );
         pixInfo[l].Iy[ii] = py * ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
-<<<<<<< HEAD
+
         if (pixInfo[l].Ix[ii] < -1000 || pixInfo[l].Ix[ii] > 1000) std::cout << j << " jherrrrrrrrrrrrrrrrrrrrrrrbuehgbfuhrgbeugbergbgbuiegbvergbvbvufgberughreuheuigerbruuiyaeiugyuegigiugyiurgyrughruyrhgurhgrughrughrughrughrurhgurghrugrughrughrugrhgurhgurgh " << i << std::endl;
       }
   	}
   }
-=======
-
-      }
-  	}
-  }
-
->>>>>>> 40d50301fc69ff52618546112c80d1ebe6b34684
+  
 }
 
 void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
@@ -322,12 +316,8 @@ vpFeatureBitplane::interaction(vpMatrix &L)
 
     for (int i = 0; i < 8; ++i)
     {
-<<<<<<< HEAD
       if (Ix[i] < -1000 || Ix[i] > 1000) std::cout << m << " 6jherrrrrrrrrrrrrrrrrrrrrrrbuehgbfuhrgbeugbergbgbuiegbvergbvbvufgberughreuheuigerbruuiyaeiugyuegigiugyiurgyrughruyrhgurhgrughrughrughrughrurhgurghrugrughrughrugrhgurhgurgh " << i << std::endl;
-=======
-      
 
->>>>>>> 40d50301fc69ff52618546112c80d1ebe6b34684
       int j = m*8 + i;
       L[j][0] = Ix[i] * Zinv;
       L[j][1] = Iy[i] * Zinv;

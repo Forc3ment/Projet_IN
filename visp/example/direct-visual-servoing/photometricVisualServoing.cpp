@@ -420,7 +420,6 @@ main(int argc, const char ** argv)
     int iterGN = 90 ; // swicth to Gauss Newton after iterGN iterations
 
     double normeError = 0;
-<<<<<<< HEAD
 
     // --------- Supposed to draw the error map, but I is empty :(
     int bord = 10;
@@ -454,7 +453,7 @@ main(int argc, const char ** argv)
     vpDisplay::getClick(testU8);
     //vpImageIo::write(testU8, "peutetre.pgm");
     // -------------------------------------------------------------
-=======
+
     int index = 0;
 
     // vpPlot A(3,700,700,400,0,"Plot");
@@ -469,29 +468,6 @@ main(int argc, const char ** argv)
     // A.setColor(2,0,vpColor::red);
     // A.setColor(2,1,vpColor::green);
     // A.setColor(2,2,vpColor::blue);
-
-    int bord = 10;
-      vpImage<double> test(I.getRows(), I.getCols());
-      for (unsigned int i = bord*10; i < I.getRows() - 10*bord - 1; i++)
-      {
-        for (unsigned int j = bord*10; j < I.getCols() - 10*bord - 1; j++)
-        {
-          vpHomogeneousMatrix cTest;
-          cTest.buildFrom(i*0.1,j*0.1,1,vpMath::rad(0),vpMath::rad(-0),vpMath::rad(0));
-          sim.setCameraPosition(cTest);
-          sim.getImage(I, cam);
-          
-          sI.buildFrom(I);
-          sI.error(sId,error);
-          normeError = (error.sumSquare());
-          test[i][j] = normeError;
-          std::cout << normeError << std::endl;
-        }
-      }
-      vpImage<unsigned char> testU8;
-      vpImageConvert::convert(test, testU8);
-      vpImageIo::write(testU8, "error_map.pgm");
->>>>>>> 40d50301fc69ff52618546112c80d1ebe6b34684
 
     do {
     std::cout << "rows:" << Hsd.getRows() << " " << Hsd.getCols() << std::endl;
@@ -575,9 +551,6 @@ main(int argc, const char ** argv)
         index++;
       }
 
-<<<<<<< HEAD
-=======
-
 
       // ---------------------------------------------------------------------------
   //     filename = vpIoTools::createFilePath(ipath, "ViSP-images//circle/circle.ppm");
@@ -604,7 +577,6 @@ main(int argc, const char ** argv)
 
       // ---------------------------------------------------------------------------
 
->>>>>>> 40d50301fc69ff52618546112c80d1ebe6b34684
       std::cout << "lambda = " << lambda << "  mu = " << mu ;
       std::cout << " |Tc| = " << sqrt(v.sumSquare()) << std::endl;
 
