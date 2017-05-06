@@ -53,11 +53,13 @@
 
 #include <visp3/core/vpMath.h>
 #include <visp3/core/vpHomogeneousMatrix.h>
+#include <visp3/core/vpExponentialMap.h>
 #include <visp3/gui/vpDisplayGTK.h>
 #include <visp3/gui/vpDisplayGDI.h>
 #include <visp3/gui/vpDisplayOpenCV.h>
 #include <visp3/gui/vpDisplayD3D.h>
 #include <visp3/gui/vpDisplayX.h>
+#include <visp3/gui/vpPlot.h>
 
 #include <visp3/visual_features/vpFeatureBitplane.h>
 #include <visp3/visual_features/vpFeatureLuminance.h>
@@ -69,6 +71,7 @@
 
 #include <visp3/io/vpParseArgv.h>
 #include <visp3/core/vpIoTools.h>
+
 
 // List of allowed command line options
 #define GETOPTARGS	"cdi:n:h"
@@ -210,6 +213,8 @@ main(int argc, const char ** argv)
       }
     }
 
+    using namespace std;
+
     // Test if an input path is set
     if (opt_ipath.empty() && env_ipath.empty()){
       usage(argv[0], NULL, ipath, opt_niter);
@@ -223,7 +228,7 @@ main(int argc, const char ** argv)
     }
 
     vpImage<unsigned char> Itexture ;
-    filename = vpIoTools::createFilePath(ipath, "");//, "ViSP-images//circle/image.0000.pgm");
+    filename = vpIoTools::createFilePath(ipath, "ViSP-images/bacall_and_bogart.jpg");//, "ViSP-images//circle/image.0000.pgm");
     vpImageIo::read(Itexture,filename);
 
     vpColVector X[4];
@@ -298,7 +303,9 @@ main(int argc, const char ** argv)
 
     //camera desired position
     vpHomogeneousMatrix cMo ;
-    cMo.buildFrom(0,0,1.2,vpMath::rad(15),vpMath::rad(-5),vpMath::rad(20));
+    //cMo.buildFrom(0,0,1.2,vpMath::rad(15),vpMath::rad(-5),vpMath::rad(20));
+        cMo.buildFrom(0.001,0,1,vpMath::rad(0),vpMath::rad(-0),vpMath::rad(0));
+
     vpHomogeneousMatrix wMo; // Set to identity
     vpHomogeneousMatrix wMc; // Camera position in the world frame
 
@@ -356,7 +363,6 @@ main(int argc, const char ** argv)
     sI.init( I.getHeight(), I.getWidth(), Z) ;
     sI.setCameraParameters(cam) ;
     sI.buildFrom(I) ;
-
     // desired visual feature built from the image
     //vpFeatureBitplane sId ;
     vpFeatureBitplane sId ;
@@ -367,6 +373,8 @@ main(int argc, const char ** argv)
     // Matrice d'interaction, Hessien, erreur,...
     vpMatrix Lsd;   // matrice d'interaction a la position desiree
     vpMatrix Hsd;  // hessien a la position desiree
+    vpMatrix lplus;
+    vpMatrix toto;
     vpMatrix H ; // Hessien utilise pour le levenberg-Marquartd
     vpColVector error ; // Erreur I-I*
 
@@ -378,29 +386,31 @@ main(int argc, const char ** argv)
 
     // Compute the Hessian H = L^TL
     Hsd = Lsd.AtA() ;
+    cout << "toto" << endl;
 
     // Compute the Hessian diagonal for the Levenberg-Marquartd
     // optimization process
-    unsigned int n = 6 ;
+    unsigned int n = 2 ;
     vpMatrix diagHsd(n,n) ;
     diagHsd.eye(n);
     for(unsigned int i = 0 ; i < n ; i++) diagHsd[i][i] = Hsd[i][i];
+    cout << "toto" << endl;
 
     // ------------------------------------------------------
     // Control law
     double lambda ; //gain
     vpColVector e ;
     vpColVector v ; // camera velocity send to the robot
-
+    vpColVector v2(6,0) ;
     // ----------------------------------------------------------
     // Minimisation
 
     double mu ;  // mu = 0 : Gauss Newton ; mu != 0  : LM
     double lambdaGN;
 
-    mu       =  0.01;
+    mu       =  0;
     lambda   = 3000 ;
-    lambdaGN = 30;
+    lambdaGN = 300;
 
     // set a velocity control mode
     robot.setRobotState(vpRobot::STATE_VELOCITY_CONTROL) ;
@@ -410,6 +420,7 @@ main(int argc, const char ** argv)
     int iterGN = 90 ; // swicth to Gauss Newton after iterGN iterations
 
     double normeError = 0;
+<<<<<<< HEAD
 
     // --------- Supposed to draw the error map, but I is empty :(
     int bord = 10;
@@ -443,6 +454,44 @@ main(int argc, const char ** argv)
     vpDisplay::getClick(testU8);
     //vpImageIo::write(testU8, "peutetre.pgm");
     // -------------------------------------------------------------
+=======
+    int index = 0;
+
+    // vpPlot A(3,700,700,400,0,"Plot");
+    // A.initGraph(0,1);
+    // A.initGraph(1,3);
+    // A.initGraph(2,3);
+
+    // A.setColor(1,0,vpColor::red);
+    // A.setColor(1,1,vpColor::green);
+    // A.setColor(1,2,vpColor::blue);
+
+    // A.setColor(2,0,vpColor::red);
+    // A.setColor(2,1,vpColor::green);
+    // A.setColor(2,2,vpColor::blue);
+
+    int bord = 10;
+      vpImage<double> test(I.getRows(), I.getCols());
+      for (unsigned int i = bord*10; i < I.getRows() - 10*bord - 1; i++)
+      {
+        for (unsigned int j = bord*10; j < I.getCols() - 10*bord - 1; j++)
+        {
+          vpHomogeneousMatrix cTest;
+          cTest.buildFrom(i*0.1,j*0.1,1,vpMath::rad(0),vpMath::rad(-0),vpMath::rad(0));
+          sim.setCameraPosition(cTest);
+          sim.getImage(I, cam);
+          
+          sI.buildFrom(I);
+          sI.error(sId,error);
+          normeError = (error.sumSquare());
+          test[i][j] = normeError;
+          std::cout << normeError << std::endl;
+        }
+      }
+      vpImage<unsigned char> testU8;
+      vpImageConvert::convert(test, testU8);
+      vpImageIo::write(testU8, "error_map.pgm");
+>>>>>>> 40d50301fc69ff52618546112c80d1ebe6b34684
 
     do {
     std::cout << "rows:" << Hsd.getRows() << " " << Hsd.getCols() << std::endl;
@@ -451,6 +500,7 @@ main(int argc, const char ** argv)
       //  Acquire the new image
       sim.setCameraPosition(cMo);
       sim.getImage(I,cam);
+
 #if defined(VISP_HAVE_X11) || defined(VISP_HAVE_GDI) || defined(VISP_HAVE_GTK) 
       if (opt_display) {
         vpDisplay::display(I) ;
@@ -480,7 +530,7 @@ main(int argc, const char ** argv)
       {
         if (iter > iterGN)
         {
-          mu = 0.01 ;
+          mu = 0 ;
           lambda = lambdaGN;
         }
 
@@ -491,21 +541,88 @@ main(int argc, const char ** argv)
         //	compute the control law
         e = H * Lsd.t() *error ;
 
+        lplus = H * Lsd.t();
+        toto  = lplus * Lsd ;
+        
+
+        // for (int i = 0; i < 6; ++i)
+        // {
+        //   for (int j = 0; j < 6; ++j)
+        //   {
+        //     std::cout << toto[i][j] << "  ";
+        //   }
+        //   std::cout << std::endl;
+        // }
+
         v = - lambda*e;
+        cout << "toto" << endl;
+        
+        v2[0]=v[0];
+        v2[1]=v[1];
+        //std::cout << H.getRows() << " " << H.getCols() << std::endl;
+
+
+        // A.plot(0,0,index,normeError);
+        // A.plot(1,0,index,v2[0]);
+        // A.plot(1,1,index,v2[1]);
+        // A.plot(1,2,index,v2[2]);
+        // A.plot(2,0,index,v2[3]);
+        // A.plot(2,1,index,v2[4]);
+        // A.plot(2,2,index,v2[5]);
+
+
+        
+        index++;
       }
 
+<<<<<<< HEAD
+=======
+
+
+      // ---------------------------------------------------------------------------
+  //     filename = vpIoTools::createFilePath(ipath, "ViSP-images//circle/circle.ppm");
+  //     vpImage<unsigned char> Ia;
+  //     sI.getAsImage(Ia);
+  //     /*try {
+  //       vpImageIo::read(Ia, filename);
+  //     }
+  //     catch(...) {
+  //       std::cout << "Cannot read image \"" << filename << "\"" << std::endl;
+  //       return -1;
+  //     }*/
+
+  // #if defined VISP_HAVE_X11
+  //     vpDisplayX d2;
+  // #endif
+  //     //std::cout << Ia.getWidth() << " " << Ia.getHeight() << std::endl;
+  //     d2.init(Ia, 20, 300, "Photometric visual servoing : s") ;
+  //     vpDisplay::setTitle(Ia, "My image");
+  //     vpDisplay::display(Ia);
+  //     vpDisplay::flush(Ia);
+  //     std::cout << "A click to quit..." << std::endl;
+  //     //vpDisplay::getClick(Ia);
+
+      // ---------------------------------------------------------------------------
+
+>>>>>>> 40d50301fc69ff52618546112c80d1ebe6b34684
       std::cout << "lambda = " << lambda << "  mu = " << mu ;
       std::cout << " |Tc| = " << sqrt(v.sumSquare()) << std::endl;
 
       // send the robot velocity
-      robot.setVelocity(vpRobot::CAMERA_FRAME, v);
-      wMc = robot.getPosition();
+     robot.setVelocity(vpRobot::CAMERA_FRAME, v2);
+
+            // cMo = vpExponentialMap::direct(v, 0.1).inverse()*cMo ;
+     wMc = robot.getPosition();
       cMo = wMc.inverse() * wMo;
+              std::cout << vpPoseVector(cMo * cdMo.inverse()) << std::endl;
+
     }
     while(normeError > 10000 && iter < opt_niter);
 
+    vpDisplay::getClick(I) ;
+
     v = 0 ;
-    robot.setVelocity(vpRobot::CAMERA_FRAME, v) ;
+    robot.setVelocity(vpRobot::CAMERA_FRAME, v2) ;
 
     return 0;
   }
