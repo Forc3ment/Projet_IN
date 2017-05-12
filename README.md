@@ -11,4 +11,6 @@ cd visp-build
 ccmake ../visp
 make
 ./tutorial/tracking/template-tracker/tutorial-template-tracker-test1tracker
+ou 
+./example/direct-visual-servoing/photometricVisualServoing -i chemin/vers/votre/image
 ```
