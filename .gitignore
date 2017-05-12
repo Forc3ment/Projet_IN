@@ -1,5 +1,7 @@
 # Build repertory
 /visp_build
+/video
+/ViSP-images
 
 # Compiled Object files
 *.slo

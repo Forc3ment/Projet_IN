@@ -6,7 +6,10 @@ find_package(VISP REQUIRED visp_core visp_tt visp_io visp_gui)
 
 # set the list of source files
 set(tutorial_cpp
-  tutorial-template-tracker.cpp)
+  tutorial-template-tracker.cpp
+  tutorial-template-tracker-test1tracker.cpp
+  tutorial-template-tracker-test2tracker.cpp
+)
 
 list(APPEND tutorial_data "${CMAKE_CURRENT_SOURCE_DIR}/bruegel.mpg" )
 
