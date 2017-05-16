@@ -262,16 +262,25 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
     }
   }
 
-  for (unsigned int i = 1; i < nbr - 2*bord - 1 ; i++)
+  for (unsigned int i = 0; i < nbr - 2*bord ; i++)
   {
-    for (unsigned int j = 1 ; j < nbc - 2*bord - 1; j++)
+    for (unsigned int j = 0 ; j < nbc - 2*bord ; j++)
     {
       l = j + i*width; // indice for 1-dimensionnal array
-      for (int ii = 0; ii < 8; ii++) {
-        pixInfo[l].Ix[ii] = px * ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );
-        pixInfo[l].Iy[ii] = py * ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
 
-        if (pixInfo[l].Ix[ii] < -1000 || pixInfo[l].Ix[ii] > 1000) std::cout << j << " jherrrrrrrrrrrrrrrrrrrrrrrbuehgbfuhrgbeugbergbgbuiegbvergbvbvufgberughreuheuigerbruuiyaeiugyuegigiugyiurgyrughruyrhgurhgrughrughrughrughrurhgurghrugrughrughrugrhgurhgurgh " << i << std::endl;
+      if (i == 0 || j == 0 || i == nbr - 2*bord - 1 || j == nbc - 2*bord - 1)
+      {
+        for (int ii = 0; ii < 8; ii++) {
+          pixInfo[l].Ix[ii] =  0;
+          pixInfo[l].Iy[ii] =  0;
+        }
+      }
+      else{
+        for (int ii = 0; ii < 8; ii++) {
+          pixInfo[l].Ix[ii] =  ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );
+          pixInfo[l].Iy[ii] =  ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
+        }
+      
       }
   	}
   }
@@ -316,15 +325,15 @@ vpFeatureBitplane::interaction(vpMatrix &L)
 
     for (int i = 0; i < 8; ++i)
     {
-      if (Ix[i] < -1000 || Ix[i] > 1000) std::cout << m << " 6jherrrrrrrrrrrrrrrrrrrrrrrbuehgbfuhrgbeugbergbgbuiegbvergbvbvufgberughreuheuigerbruuiyaeiugyuegigiugyiurgyrughruyrhgurhgrughrughrughrughrurhgurghrugrughrughrugrhgurhgurgh " << i << std::endl;
+      //if (m > dim_s - 400) std::cout << m << " " << i << " " << Ix[i] << std::endl;
 
       int j = m*8 + i;
       L[j][0] = Ix[i] * Zinv;
       L[j][1] = Iy[i] * Zinv;
-      // L[j][2] = -(x*Ix[i] + y*Iy[i]) * Zinv;
-      // L[j][3] = -Ix[i]*x*y - (1+y*y)*Iy[i];
-      // L[j][4] = (1+x*x)*Ix[i] + Iy[i]*x*y;
-      // L[j][5] = Iy[i]*x - Ix[i]*y;
+//       L[j][2] = -(x*Ix[i] + y*Iy[i]) * Zinv;
+//       L[j][3] = -Ix[i]*x*y - (1+y*y)*Iy[i];
+//       L[j][4] = (1+x*x)*Ix[i] + Iy[i]*x*y;
+//       L[j][5] = Iy[i]*x - Ix[i]*y;
     }
   }
 }
@@ -358,11 +367,10 @@ vpFeatureBitplane::error(const vpBasicFeature &s_star,
   if (&s_star_lbp != NULL)
   {
     int l = 0;
-    int pix = 0;
-    for (unsigned int i = bord; i < nbr - bord ; i++)
-    {
-      for (unsigned int j = bord ; j < nbc - bord; j++)
-      { 
+
+    for(unsigned int pix = 0; pix < dim_s; pix++)
+
+      {
         e[l]   = pixInfo[pix].lbp[0] ^ s_star_lbp.pixInfo[pix].lbp[0];
         e[l+1] = pixInfo[pix].lbp[1] ^ s_star_lbp.pixInfo[pix].lbp[1];
         e[l+2] = pixInfo[pix].lbp[2] ^ s_star_lbp.pixInfo[pix].lbp[2];
@@ -371,10 +379,8 @@ vpFeatureBitplane::error(const vpBasicFeature &s_star,
         e[l+5] = pixInfo[pix].lbp[5] ^ s_star_lbp.pixInfo[pix].lbp[5];
         e[l+6] = pixInfo[pix].lbp[6] ^ s_star_lbp.pixInfo[pix].lbp[6];
         e[l+7] = pixInfo[pix].lbp[7] ^ s_star_lbp.pixInfo[pix].lbp[7];
-        
+
         l += 8;
-        pix++;
-      }
     }
   }
   else std::cout << "ERROR !!";

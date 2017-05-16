@@ -182,7 +182,7 @@ main(int argc, const char ** argv)
     std::string filename;
     bool opt_click_allowed = true;
     bool opt_display = true;
-    int opt_niter = 400;
+    int opt_niter = 40000;
 
     // Get the visp-images-data package path or VISP_INPUT_IMAGE_PATH environment variable value
     env_ipath = vpIoTools::getViSPImagesDataPath();
@@ -228,7 +228,7 @@ main(int argc, const char ** argv)
     }
 
     vpImage<unsigned char> Itexture ;
-    filename = vpIoTools::createFilePath(ipath, "ViSP-images/bacall_and_bogart.jpg");//, "ViSP-images//circle/image.0000.pgm");
+    filename = vpIoTools::createFilePath(ipath, "");//, "ViSP-images//circle/image.0000.pgm");
     vpImageIo::read(Itexture,filename);
 
     vpColVector X[4];
@@ -304,7 +304,7 @@ main(int argc, const char ** argv)
     //camera desired position
     vpHomogeneousMatrix cMo ;
     //cMo.buildFrom(0,0,1.2,vpMath::rad(15),vpMath::rad(-5),vpMath::rad(20));
-        cMo.buildFrom(0.001,0,1,vpMath::rad(0),vpMath::rad(-0),vpMath::rad(0));
+        cMo.buildFrom(0.001,0.001,1,vpMath::rad(0),vpMath::rad(-0),vpMath::rad(0));
 
     vpHomogeneousMatrix wMo; // Set to identity
     vpHomogeneousMatrix wMc; // Camera position in the world frame
@@ -347,7 +347,7 @@ main(int argc, const char ** argv)
 #endif
     // create the robot (here a simulated free flying camera)
     vpSimulatorCamera robot;
-    robot.setSamplingTime(0.04);
+    robot.setSamplingTime(0.1);
     wMc = wMo * cMo.inverse();
     robot.setPosition(wMc);
 
@@ -364,7 +364,6 @@ main(int argc, const char ** argv)
     sI.setCameraParameters(cam) ;
     sI.buildFrom(I) ;
     // desired visual feature built from the image
-    //vpFeatureBitplane sId ;
     vpFeatureBitplane sId ;
     sId.init(I.getHeight(), I.getWidth(),  Z) ;
     sId.setCameraParameters(cam) ;
@@ -374,27 +373,38 @@ main(int argc, const char ** argv)
     vpMatrix Lsd;   // matrice d'interaction a la position desiree
     vpMatrix Hsd;  // hessien a la position desiree
     vpMatrix lplus;
-    vpMatrix toto;
-    vpMatrix H ; // Hessien utilise pour le levenberg-Marquartd
+    vpMatrix H, Lsdp ; // Hessien utilise pour le levenberg-Marquartd
     vpColVector error ; // Erreur I-I*
 
     // Compute the interaction matrix
     // link the variation of image intensity to camera motion
 
+    double mu = 0 ;
+
     // here it is computed at the desired position
-    sId.interaction(Lsd) ;
+    // sId.interaction(Lsd) ;
 
-    // Compute the Hessian H = L^TL
-    Hsd = Lsd.AtA() ;
-    cout << "toto" << endl;
+    // // Compute the Hessian H = L^TL
+    // Hsd = Lsd.AtA() ;
 
-    // Compute the Hessian diagonal for the Levenberg-Marquartd
-    // optimization process
-    unsigned int n = 2 ;
-    vpMatrix diagHsd(n,n) ;
-    diagHsd.eye(n);
-    for(unsigned int i = 0 ; i < n ; i++) diagHsd[i][i] = Hsd[i][i];
-    cout << "toto" << endl;
+
+    // // Compute the Hessian diagonal for the Levenberg-Marquartd
+    // // optimization process
+    // unsigned int n = 2 ;
+    // vpMatrix diagHsd(n,n) ;
+    // diagHsd.eye(n);
+    // for(unsigned int i = 0 ; i < n ; i++) diagHsd[i][i] = Hsd[i][i];
+
+    // // Compute the levenberg Marquartd term
+    // {
+    //   H = ((mu * diagHsd) + Hsd).inverseByLU();
+    // }
+
+
+    // Lsdp = H*Lsd.t() ;
+
+
+
 
     // ------------------------------------------------------
     // Control law
@@ -405,12 +415,11 @@ main(int argc, const char ** argv)
     // ----------------------------------------------------------
     // Minimisation
 
-    double mu ;  // mu = 0 : Gauss Newton ; mu != 0  : LM
     double lambdaGN;
 
-    mu       =  0;
-    lambda   = 3000 ;
-    lambdaGN = 300;
+    mu       = 0.01 ;
+    lambda   = 1 ;
+    lambdaGN = 1 ;
 
     // set a velocity control mode
     robot.setRobotState(vpRobot::STATE_VELOCITY_CONTROL) ;
@@ -422,55 +431,25 @@ main(int argc, const char ** argv)
     double normeError = 0;
 
     // --------- Supposed to draw the error map, but I is empty :(
-    int bord = 10;
-    vpImage<double> test(I.getRows(), I.getCols());
-    for (unsigned int i = bord*10; i < I.getRows() - 10*bord - 1; i++)
-    {
-      for (unsigned int j = bord*10; j < I.getCols() - 10*bord - 1; j++)
-      {
-        vpHomogeneousMatrix cTest;
-        cTest.buildFrom(i*.01, j*.01, 1.2, vpMath::rad(15),vpMath::rad(-5),vpMath::rad(20));
-        sim.setCameraPosition(cTest);
-        I = 0;
-        sim.getImage(I, cam);
-        
-        sI.buildFrom(I);
-        sI.error(sId, error);
-        normeError = (error.sumSquare());
-        test[i][j] = normeError;
-        std::cout << normeError << std::endl;
-        vpDisplay::display(I);
-        vpDisplay::flush(I);
-        vpDisplay::getClick(I);
-        vpImageIo::write(I, "peutetre.pgm");
-      }
-    }
-    vpImage<unsigned char> testU8;
-    vpImageConvert::convert(test, testU8);
-    vpDisplayX d2;
-    vpDisplay::display(testU8);
-    vpDisplay::flush(testU8);
-    vpDisplay::getClick(testU8);
-    //vpImageIo::write(testU8, "peutetre.pgm");
-    // -------------------------------------------------------------
 
     int index = 0;
 
-    // vpPlot A(3,700,700,400,0,"Plot");
-    // A.initGraph(0,1);
-    // A.initGraph(1,3);
-    // A.initGraph(2,3);
+     vpPlot A(4,700,700,400,0,"Plot");    
+     A.initGraph(0,1);
+     A.initGraph(1,3);
+     A.initGraph(2,3);
+     A.initGraph(3,3);
 
-    // A.setColor(1,0,vpColor::red);
-    // A.setColor(1,1,vpColor::green);
-    // A.setColor(1,2,vpColor::blue);
+     A.setColor(1,0,vpColor::red);
+     A.setColor(1,1,vpColor::green);
+     A.setColor(1,2,vpColor::blue);
 
-    // A.setColor(2,0,vpColor::red);
-    // A.setColor(2,1,vpColor::green);
-    // A.setColor(2,2,vpColor::blue);
+     A.setColor(2,0,vpColor::red);
+     A.setColor(2,1,vpColor::green);
+     A.setColor(2,2,vpColor::blue);
 
     do {
-    std::cout << "rows:" << Hsd.getRows() << " " << Hsd.getCols() << std::endl;
+    
       std::cout << "--------------------------------------------" << iter++ << std::endl ;
 
       //  Acquire the new image
@@ -497,83 +476,75 @@ main(int argc, const char ** argv)
       // compute current error
       sI.error(sId,error) ;
 
-      normeError = (error.sumSquare());
-      std::cout << "|e| "<<normeError <<std::endl;
+      sI.interaction(Lsd);
+
+      Hsd = Lsd.AtA() ;
+
+      unsigned int n = 2 ;
+      vpMatrix diagHsd(n,n) ;
+      diagHsd.eye(n);
+      for(unsigned int i = 0 ; i < n ; i++) diagHsd[i][i] = Hsd[i][i];
+
+      // Compute the levenberg Marquartd term
+      
+      H = ((mu * diagHsd) + Hsd).inverseByLU();
+      
+
+
+      Lsdp = Lsd.t() ;
 
       // double t = vpTime::measureTimeMs() ;
 
       // ---------- Levenberg Marquardt method --------------
       {
-        if (iter > iterGN)
-        {
-          mu = 0 ;
-          lambda = lambdaGN;
-        }
-
-        // Compute the levenberg Marquartd term
-        {
-          H = ((mu * diagHsd) + Hsd).inverseByLU();
-        }
-        //	compute the control law
-        e = H * Lsd.t() *error ;
-
-        lplus = H * Lsd.t();
-        toto  = lplus * Lsd ;
-        
-
-        // for (int i = 0; i < 6; ++i)
+      //  if (iter > iterGN)
         // {
-        //   for (int j = 0; j < 6; ++j)
-        //   {
-        //     std::cout << toto[i][j] << "  ";
-        //   }
-        //   std::cout << std::endl;
+        //   mu = 0 ;
+        //   lambda = lambdaGN;
         // }
 
-        v = - lambda*e;
-        cout << "toto" << endl;
-        
+       // Compute the levenberg Marquartd term
+       // {
+       //   H = ((mu * diagHsd) + Hsd).inverseByLU();
+       // }
+
+
+          normeError = (error.sumSquare());
+          std::cout << "|e| "<<normeError <<std::endl;
+
+
+          //	compute the control law
+        e = Lsdp * error ;
+
+        lplus = H * Lsd.t();
+
+        // if (iter==133 || iter==134 || iter==135) {
+        //     for( unsigned int i=1 ; i < Lsd.getRows() ; i++ )
+        //         cout <<"i = " << i << " " << Lsdp[0][i] <<  "  " << Lsdp[1][i] <<"  " << error[i] << endl ;
+        // }
+        v =  - lambda*e;
+
+
+        cout << "v " << v.t() << endl ;
+        v2 = 0 ;
         v2[0]=v[0];
         v2[1]=v[1];
+
         //std::cout << H.getRows() << " " << H.getCols() << std::endl;
 
 
-        // A.plot(0,0,index,normeError);
-        // A.plot(1,0,index,v2[0]);
-        // A.plot(1,1,index,v2[1]);
-        // A.plot(1,2,index,v2[2]);
-        // A.plot(2,0,index,v2[3]);
-        // A.plot(2,1,index,v2[4]);
-        // A.plot(2,2,index,v2[5]);
+         A.plot(0,0,index,normeError);
+         A.plot(1,0,index,v[0]);
+         A.plot(1,1,index,v[1]);
+//         A.plot(1,2,index,v[2]);
+//         A.plot(2,0,index,v[3]);
+//         A.plot(2,1,index,v[4]);
+//         A.plot(2,2,index,v[5]);
 
 
         
         index++;
       }
-
-
-      // ---------------------------------------------------------------------------
-  //     filename = vpIoTools::createFilePath(ipath, "ViSP-images//circle/circle.ppm");
-  //     vpImage<unsigned char> Ia;
-  //     sI.getAsImage(Ia);
-  //     /*try {
-  //       vpImageIo::read(Ia, filename);
-  //     }
-  //     catch(...) {
-  //       std::cout << "Cannot read image \"" << filename << "\"" << std::endl;
-  //       return -1;
-  //     }*/
-
-  // #if defined VISP_HAVE_X11
-  //     vpDisplayX d2;
-  // #endif
-  //     //std::cout << Ia.getWidth() << " " << Ia.getHeight() << std::endl;
-  //     d2.init(Ia, 20, 300, "Photometric visual servoing : s") ;
-  //     vpDisplay::setTitle(Ia, "My image");
-  //     vpDisplay::display(Ia);
-  //     vpDisplay::flush(Ia);
-  //     std::cout << "A click to quit..." << std::endl;
-  //     //vpDisplay::getClick(Ia);
 
       // ---------------------------------------------------------------------------
 
@@ -586,10 +557,16 @@ main(int argc, const char ** argv)
             // cMo = vpExponentialMap::direct(v, 0.1).inverse()*cMo ;
      wMc = robot.getPosition();
       cMo = wMc.inverse() * wMo;
-              std::cout << vpPoseVector(cMo * cdMo.inverse()) << std::endl;
+
+      vpPoseVector crcd(cMo * cdMo.inverse()) ;
+      A.plot(3,0,index,crcd[0]);
+      A.plot(3,1,index,crcd[1]);
+
+              //std::cout << vpPoseVector(cMo * cdMo.inverse()) << std::endl;
+      std::cout << "\n \n \n";
 
     }
-    while(normeError > 10000 && iter < opt_niter);
+    while(iter < opt_niter);
 
     vpDisplay::getClick(I) ;
 
