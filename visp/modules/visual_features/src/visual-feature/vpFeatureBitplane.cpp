@@ -35,7 +35,7 @@
  *
  *****************************************************************************/
 
-
+#include <iostream>
 #include <visp3/core/vpMatrix.h>
 #include <visp3/core/vpHomogeneousMatrix.h>
 #include <visp3/core/vpDisplay.h>
@@ -46,7 +46,7 @@
 
 #include <visp3/visual_features/vpFeatureBitplane.h>
 
-
+using namespace std;
 /*!
   \file vpFeatureBitplane.cpp
   \brief Class that defines the image luminance visual feature
@@ -240,6 +240,8 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
     	   
     	  pixInfo[l].x = x;
     	  pixInfo[l].y = y;
+        pixInfo[l].i = i;
+        pixInfo[l].j = j;
 
     	  pixInfo[l].Z = Z ;
 
@@ -252,40 +254,46 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 
   int width = nbc - 2*bord; // width of the pic without bords
   int parsed[16] = {-1, -1, -1, 0, -1, 1, 0, 1, 1, 1, 1, 0, 1, -1, 0, -1}; // duos of i & j used for lbp
-  for (unsigned int i = bord; i < nbr - bord ; i++)
-  {
-    for (unsigned int j = bord ; j < nbc - bord; j++)
+
+  for(unsigned int l = 0; l < dim_s; l++)
   	{
-      l = (j-bord) + (i-bord)*width; // indice for 1-dimensionnal array (pixInfo begins at 0 so -bord)
+      int i = pixInfo[l].i;
+      int j = pixInfo[l].j;
+
       for (int ii = 0; ii < 8; ii++) // for each lbp
         pixInfo[l].lbp[ii] = toBlur[i+parsed[2*ii]][j+parsed[2*ii+1]] < toBlur[i][j];
+    
     }
-  }
 
-  for (unsigned int i = 0; i < nbr - 2*bord ; i++)
-  {
-    for (unsigned int j = 0 ; j < nbc - 2*bord ; j++)
+   for(unsigned int l = 0; l < dim_s; l++)
     {
-      l = j + i*width; // indice for 1-dimensionnal array
+    
 
-      if (i == 0 || j == 0 || i == nbr - 2*bord - 1 || j == nbc - 2*bord - 1)
+      int i = pixInfo[l].i;
+      int j = pixInfo[l].j;
+    
+      if (i <= 0 || j <= 0 || i >= nbr - 2*bord - 1 || j >= nbc - 2*bord - 1)
       {
         for (int ii = 0; ii < 8; ii++) {
           pixInfo[l].Ix[ii] =  0;
           pixInfo[l].Iy[ii] =  0;
+
         }
+         
       }
+
       else{
         for (int ii = 0; ii < 8; ii++) {
-          pixInfo[l].Ix[ii] =  ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );
-          pixInfo[l].Iy[ii] =  ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
-        }
-      
+          //pixInfo[l].Ix[ii] =  ( (pixInfo[l].lbp[ii]) - (pixInfo[l+1].lbp[ii]) );
+          //pixInfo[l].Iy[ii] =  ( (pixInfo[l+width].lbp[ii]) - (pixInfo[l-width].lbp[ii]) );
+          pixInfo[l].Ix[ii] = px * ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );
+          pixInfo[l].Iy[ii] = py * ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
+        } 
+         
       }
-  	}
-  }
-  
-}
+  	} 
+}  
+
 
 void vpFeatureBitplane::getAsImage(vpImage<unsigned char> &ret)
 {

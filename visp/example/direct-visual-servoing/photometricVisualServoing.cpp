@@ -491,7 +491,7 @@ main(int argc, const char ** argv)
       
 
 
-      Lsdp = Lsd.t() ;
+      Lsdp = H*Lsd.t() ;
 
       // double t = vpTime::measureTimeMs() ;
 
