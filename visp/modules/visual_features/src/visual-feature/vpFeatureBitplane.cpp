@@ -271,9 +271,11 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 
       int i = pixInfo[l].i;
       int j = pixInfo[l].j;
+
     
-      if (i <= 0 || j <= 0 || i >= nbr - 2*bord - 1 || j >= nbc - 2*bord - 1)
+      if (i <= 10 || j <= 10 || i >= nbr - bord - 1 || j >= nbc - bord - 1)
       {
+
         for (int ii = 0; ii < 8; ii++) {
           pixInfo[l].Ix[ii] =  0;
           pixInfo[l].Iy[ii] =  0;
@@ -284,10 +286,10 @@ vpFeatureBitplane::buildFrom(vpImage<unsigned char> &I)
 
       else{
         for (int ii = 0; ii < 8; ii++) {
-          //pixInfo[l].Ix[ii] =  ( (pixInfo[l].lbp[ii]) - (pixInfo[l+1].lbp[ii]) );
-          //pixInfo[l].Iy[ii] =  ( (pixInfo[l+width].lbp[ii]) - (pixInfo[l-width].lbp[ii]) );
-          pixInfo[l].Ix[ii] = px * ( (pixInfo[(j-1) + i*width].lbp[ii]) - (pixInfo[(j+1) + i*width].lbp[ii]) );
-          pixInfo[l].Iy[ii] = py * ( (pixInfo[j + (i-1)*width].lbp[ii]) - (pixInfo[j + (i+1)*width].lbp[ii]) );
+
+          pixInfo[l].Ix[ii] =  ( (pixInfo[l-1].lbp[ii]) - (pixInfo[l+1].lbp[ii]) );
+          pixInfo[l].Iy[ii] =  ( (pixInfo[l-width].lbp[ii]) - (pixInfo[l+width].lbp[ii]) );
+          
         } 
          
       }

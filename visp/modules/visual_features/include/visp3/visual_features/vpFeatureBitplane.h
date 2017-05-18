@@ -63,6 +63,7 @@ class VISP_EXPORT vpBitplane
 {
  public:
   double x, y;   // point coordinates (in meter)
+  int i, j;     // point coordinates (in pixel)
   bool* lbp ; // pixel sum of bitplanes
   double *Ix, *Iy ; // pixel gradient
   double Z; // pixel depth
